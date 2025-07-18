@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     UI.profileName.textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim();
                 }
                 if (UI.profileId) {
-                    UI.profileId.textContent = `User ID ${user.id}`;
+                    UI.profileId.textContent = `ID ${user.id}`;
                 }
             }
         } catch (error) {
