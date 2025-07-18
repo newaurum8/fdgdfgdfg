@@ -44,9 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const tg = window.Telegram.WebApp;
             const user = tg.initDataUnsafe.user;
             
-            // ЗАМІНІТЬ 'your_bot_username' на ім'я вашого бота
-            // ЗАМІНІТЬ 'your_app_name' на назву вашого Mini App (як вказано в BotFather)
-            const app_url = `https://t.me/qqtest134_bot/your_app_name?startapp=${user.id}`;
+            // Використовуємо правильні дані: qqtest134_bot та website
+            const app_url = `https://t.me/qqtest134_bot/website?startapp=${user.id}`;
             const text = `Привіт! Приєднуйся до StarsDrop та отримуй круті подарунки!`;
             
             tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(app_url)}&text=${encodeURIComponent(text)}`);
@@ -54,6 +53,29 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch(e) {
             console.error(e);
             alert("Функція запрошення доступна лише в Telegram.");
+        }
+    }
+    
+    // Нова функція для копіювання
+    function copyInviteLink() {
+        try {
+            const tg = window.Telegram.WebApp;
+            const user = tg.initDataUnsafe.user;
+            
+            // Використовуємо правильні дані: qqtest134_bot та website
+            const app_url = `https://t.me/qqtest134_bot/website?startapp=${user.id}`;
+
+            // Використовуємо Clipboard API для копіювання
+            navigator.clipboard.writeText(app_url).then(() => {
+                alert('Посилання скопійовано!');
+            }).catch(err => {
+                console.error('Не вдалося скопіювати посилання: ', err);
+                alert('Помилка копіювання.');
+            });
+
+        } catch(e) {
+            console.error(e);
+            alert("Функція копіювання доступна лише в Telegram.");
         }
     }
 
@@ -386,6 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.profileName = document.getElementById('profile-name');
         UI.profileId = document.getElementById('profile-id');
         UI.inviteFriendBtn = document.getElementById('invite-friend-btn');
+        UI.copyLinkBtn = document.getElementById('copy-link-btn'); // Шукаємо кнопку копіювання
         
         if (!UI.caseImageBtn) throw new Error('Не вдалося знайти картинку кейса з id="case-image-btn"');
 
@@ -395,6 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.quantitySelector.addEventListener('click', handleQuantityChange);
         UI.navButtons.forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
         UI.inviteFriendBtn.addEventListener('click', inviteFriend);
+        UI.copyLinkBtn.addEventListener('click', copyInviteLink); // Додаємо обробник для копіювання
         UI.profileTabs.forEach(tab => tab.addEventListener('click', function() {
             UI.profileTabs.forEach(t => t.classList.remove('active'));
             UI.profileContents.forEach(c => c.classList.remove('active'));
