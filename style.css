@@ -25,6 +25,8 @@ body {
 
 .icon { font-style: normal; }
 .hidden { display: none !important; }
+.view-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; text-align: center; }
+.view-description { color: var(--secondary-text-color); text-align: center; }
 
 .mini-app { 
     width: 100%;
@@ -50,9 +52,20 @@ body {
 }
 
 .header-title { font-size: 20px; font-weight: bold; }
-.header-resources { display: flex; }
-.resource { display: flex; align-items: center; background-color: var(--card-bg-color); padding: 4px 10px; border-radius: 20px; font-size: 14px; font-weight: 600; }
-.resource .icon { margin-right: 5px; }
+
+.header-balance {
+    display: flex;
+    align-items: center;
+    background-color: var(--card-bg-color);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.header-balance .icon {
+    margin-right: 5px;
+}
 
 .views-container {
     flex-grow: 1;
@@ -67,13 +80,14 @@ body {
     left: 15px;
     right: 15px;
     bottom: 0;
-    display: flex;
+    display: none;
     flex-direction: column;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
 }
 .view.active {
+    display: flex;
     opacity: 1;
     pointer-events: all;
 }
@@ -114,10 +128,52 @@ body {
 .vertical-roulette-item img { max-width: 60%; max-height: 60%; object-fit: contain; }
 
 
-/* --- ПРОФІЛЬ, ІСТОРІЯ, ІНВЕНТАР --- */
+/* --- ДРУЗІ --- */
+#friends-view {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+}
+
+.friends-invite-section {
+    background-color: var(--card-bg-color);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.friends-invite-section h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.friends-invite-section p {
+    color: var(--secondary-text-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.friends-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.friends-buttons .primary-button {
+    flex-grow: 1;
+}
+
+.friends-buttons .secondary-button {
+    width: 50px;
+    flex-shrink: 0;
+}
+
+/* --- ПРОФІЛЬ --- */
 #profile-view { justify-content: flex-start; gap: 15px; }
 .profile-header { display: flex; align-items: center; gap: 15px; background-color: var(--card-bg-color); padding: 15px; border-radius: 12px; margin-bottom: 5px;}
-.profile-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.profile-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background-color: var(--bg-color); }
 .profile-info { display: flex; flex-direction: column; }
 .profile-name { font-size: 20px; font-weight: bold; margin: 0; }
 .profile-id { font-size: 14px; color: var(--secondary-text-color); margin: 4px 0 0 0; }
@@ -210,3 +266,33 @@ body {
 .nav-icon { font-size: 24px; }
 .nav-label { font-size: 12px; }
 .nav-btn.active { color: var(--accent-color); }
+
+/* --- Іконка "Друзі" --- */
+.friends-icon {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.friend-plus {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.friend-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%238A92A4"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}

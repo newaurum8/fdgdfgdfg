@@ -13,21 +13,19 @@
     <div class="mini-app">
         <header class="app-header">
             <div class="header-title">StarsDrop</div>
-            <div class="header-resources">
-                <div class="resource">
-                    <span class="icon">⭐</span>
-                    <span id="user-balance">1250</span>
-                </div>
+            <div class="resource header-balance">
+                <span class="icon">⭐</span>
+                <span id="user-balance">1250</span>
             </div>
         </header>
 
         <div class="views-container">
 
-            <div id="game-view" class="view">
+            <div id="game-view" class="view active">
                 <div id="case-view">
                     <div class="case-card">
                         <img id="case-image-btn" src="case.png" alt="Gift Case" class="case-main-image">
-                        <div class="case-card-title">All in</div>
+                        <div class="case-card-title">All in Cigar</div>
                     </div>
                 </div>
                 <div id="spin-view" class="hidden">
@@ -38,6 +36,29 @@
                     </div>
                     <div id="multi-spinner-container" class="multi-spinner-container hidden"></div>
                 </div>
+            </div>
+
+            <div id="upgrade-view" class="view">
+                <h2 class="view-title">Апгрейд</h2>
+                <p class="view-description">Розділ в розробці.</p>
+            </div>
+
+            <div id="contests-view" class="view">
+                <h2 class="view-title">Конкурси</h2>
+                <p class="view-description">Розділ в розробці.</p>
+            </div>
+
+            <div id="friends-view" class="view">
+                <div class="friends-invite-section">
+                    <h2>Запрошуй друзів - Отримуй Нагороди!</h2>
+                    <p>Кожен запрошений друг = 1 <span class="icon">🎫</span> білет</p>
+                    <div class="friends-buttons">
+                        <button id="invite-friend-btn" class="primary-button">Запросити друга</button>
+                        <button class="secondary-button"><span class="icon">📄</span></button>
+                    </div>
+                </div>
+                <div class="friends-list">
+                    </div>
             </div>
 
             <div id="profile-view" class="view">
@@ -60,8 +81,21 @@
         </div>
 
         <footer class="bottom-nav">
-             <button class="nav-btn active" data-view="game-view">
+             <button class="nav-btn" data-view="contests-view">
+                <div class="nav-icon">🎁</div><div class="nav-label">Конкурси</div>
+            </button>
+            <button class="nav-btn" data-view="upgrade-view">
+                <div class="nav-icon">⏫</div><div class="nav-label">Апгрейд</div>
+            </button>
+            <button class="nav-btn active" data-view="game-view">
                 <div class="nav-icon">📦</div><div class="nav-label">Кейси</div>
+            </button>
+            <button class="nav-btn" data-view="friends-view">
+                <div class="nav-icon friends-icon">
+                    <div class="friend-plus">+</div>
+                    <div class="friend-avatar"></div>
+                </div>
+                <div class="nav-label">Друзі</div>
             </button>
             <button class="nav-btn" data-view="profile-view">
                 <div class="nav-icon">👤</div><div class="nav-label">Профіль</div>
