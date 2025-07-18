@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>StarsDrop</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="modal-overlay" class="overlay"></div>
+
+    <div class="mini-app">
+        <header class="app-header">
+            <div class="header-title">StarsDrop</div>
+            <div class="header-resources">
+                <div class="resource">
+                    <span class="icon">⭐</span>
+                    <span id="user-balance">1250</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="views-container">
+
+            <div id="game-view" class="view">
+                <div id="case-view">
+                    <div class="case-card">
+                        <img id="case-image-btn" src="case.png" alt="Gift Case" class="case-main-image">
+                        <div class="case-card-title">GIFTS BATTLE</div>
+                    </div>
+                </div>
+                <div id="spin-view" class="hidden">
+                    <h1 class="case-title-main">Vintage Cigar ALL IN</h1>
+                    <div id="spinner-container" class="spinner-container">
+                        <div class="spinner-pointer"></div>
+                        <div id="roulette" class="roulette-track"></div>
+                    </div>
+                    <div id="multi-spinner-container" class="multi-spinner-container hidden">
+                        </div>
+                </div>
+            </div>
+
+            <div id="profile-view" class="view">
+                <h2>Профіль</h2>
+                <div class="profile-tabs">
+                    <button class="profile-tab-btn active" data-tab="inventory">Інвентар</button>
+                    <button class="profile-tab-btn" data-tab="history">Історія</button>
+                </div>
+                <div class="profile-content">
+                    <div id="inventory-content" class="profile-tab-content active"></div>
+                    <div id="history-content" class="profile-tab-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="bottom-nav">
+             <button class="nav-btn active" data-view="game-view">
+                <div class="nav-icon">📦</div><div class="nav-label">Кейси</div>
+            </button>
+            <button class="nav-btn" data-view="profile-view">
+                <div class="nav-icon">👤</div><div class="nav-label">Профіль</div>
+            </button>
+        </footer>
+    </div>
+
+    <div id="pre-open-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" data-close-modal="pre-open-modal">✖</button>
+            <img src="case.png" alt="Gift Case" class="modal-case-image">
+            <div id="price-check-message" class="price-message">⭐ 100</div>
+            <div class="options-group">
+                <label>Скільки кейсів відкрити?</label>
+                <div id="quantity-selector" class="quantity-selector">
+                    <button class="quantity-btn active">1</button>
+                    <button class="quantity-btn">2</button>
+                    <button class="quantity-btn">3</button>
+                    <button class="quantity-btn">4</button>
+                    <button class="quantity-btn">5</button>
+                </div>
+            </div>
+            <div class="options-group">
+                <label>Вміст кейсу</label>
+                <div id="case-contents-preview" class="contents-preview"></div>
+            </div>
+            <button id="start-spin-btn" class="primary-button">Відкрити</button>
+        </div>
+    </div>
+    
+    <div id="result-modal" class="modal"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
