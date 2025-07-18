@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
         casePrice: 100,
         lastWonItems: [],
         possibleItems: [
-            { id: 1, name: 'Evil Eye', imageSrc: 'item.png', value: 3170 },
-            { id: 2, name: 'Lol Pop', imageSrc: 'item1.png', value: 440 },
-            { id: 3, name: 'Champagne', imageSrc: 'case.png', value: 50 },
+            { id: 1, name: 'Cigar', imageSrc: 'item.png', value: 3170 },
+            { id: 2, name: 'Bear', imageSrc: 'item1.png', value: 440 },
+            { id: 3, name: 'Sigma', imageSrc: 'case.png', value: 50 },
         ]
     };
 
