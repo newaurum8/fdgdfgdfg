@@ -20,6 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- ФУНКЦІЇ ---
 
+    // Нова функція для показу сповіщень
+    function showNotification(message) {
+        if (!UI.notificationToast) return;
+        UI.notificationToast.textContent = message;
+        UI.notificationToast.classList.add('visible');
+
+        setTimeout(() => {
+            UI.notificationToast.classList.remove('visible');
+        }, 2000); // Повідомлення зникне через 2 секунди
+    }
+
     function loadTelegramData() {
         try {
             const tg = window.Telegram.WebApp;
@@ -44,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const tg = window.Telegram.WebApp;
             const user = tg.initDataUnsafe.user;
             
-            // Використовуємо правильні дані: qqtest134_bot та website
             const app_url = `https://t.me/qqtest134_bot/website?startapp=${user.id}`;
             const text = `Привіт! Приєднуйся до StarsDrop та отримуй круті подарунки!`;
             
@@ -52,30 +62,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch(e) {
             console.error(e);
-            alert("Функція запрошення доступна лише в Telegram.");
+            showNotification("Функція доступна лише в Telegram.");
         }
     }
-    
-    // Нова функція для копіювання
+
     function copyInviteLink() {
         try {
             const tg = window.Telegram.WebApp;
             const user = tg.initDataUnsafe.user;
             
-            // Використовуємо правильні дані: qqtest134_bot та website
             const app_url = `https://t.me/qqtest134_bot/website?startapp=${user.id}`;
 
-            // Використовуємо Clipboard API для копіювання
             navigator.clipboard.writeText(app_url).then(() => {
-                alert('Посилання скопійовано!');
+                showNotification('Посилання скопійовано!'); // Використовуємо нову функцію
             }).catch(err => {
                 console.error('Не вдалося скопіювати посилання: ', err);
-                alert('Помилка копіювання.');
+                showNotification('Помилка копіювання.'); // І тут також
             });
 
         } catch(e) {
             console.error(e);
-            alert("Функція копіювання доступна лише в Telegram.");
+            showNotification("Функція доступна лише в Telegram.");
         }
     }
 
@@ -384,6 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- ІНІЦІАЛІЗАЦІЯ ---
     try {
         // Пошук елементів
+        UI.notificationToast = document.getElementById('notification-toast'); // Шукаємо новий елемент
         UI.userBalanceElement = document.getElementById('user-balance');
         UI.views = document.querySelectorAll('.view');
         UI.navButtons = document.querySelectorAll('.nav-btn');
@@ -408,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.profileName = document.getElementById('profile-name');
         UI.profileId = document.getElementById('profile-id');
         UI.inviteFriendBtn = document.getElementById('invite-friend-btn');
-        UI.copyLinkBtn = document.getElementById('copy-link-btn'); // Шукаємо кнопку копіювання
+        UI.copyLinkBtn = document.getElementById('copy-link-btn');
         
         if (!UI.caseImageBtn) throw new Error('Не вдалося знайти картинку кейса з id="case-image-btn"');
 
@@ -418,7 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.quantitySelector.addEventListener('click', handleQuantityChange);
         UI.navButtons.forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
         UI.inviteFriendBtn.addEventListener('click', inviteFriend);
-        UI.copyLinkBtn.addEventListener('click', copyInviteLink); // Додаємо обробник для копіювання
+        UI.copyLinkBtn.addEventListener('click', copyInviteLink);
         UI.profileTabs.forEach(tab => tab.addEventListener('click', function() {
             UI.profileTabs.forEach(t => t.classList.remove('active'));
             UI.profileContents.forEach(c => c.classList.remove('active'));

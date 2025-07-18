@@ -296,3 +296,24 @@ body {
     background-repeat: no-repeat;
     background-position: center;
 }
+.notification-toast {
+    position: absolute;
+    bottom: 80px; /* Розташування над нижньою навігацією */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.notification-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px); /* Ефект "випливання" */
+}
