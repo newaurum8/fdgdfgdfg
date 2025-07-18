@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
         casePrice: 100,
         lastWonItems: [],
         possibleItems: [
-            { id: 1, name: 'Vintage Cigar El Classico', imageSrc: 'item.png', value: 3170 },
-            { id: 2, name: 'Bear', imageSrc: 'item1.png', value: 440 },
-            { id: 3, name: 'Sigma', imageSrc: 'case.png', value: 50 },
+            { id: 1, name: 'Evil Eye', imageSrc: 'item.png', value: 3170 },
+            { id: 2, name: 'Lol Pop', imageSrc: 'item1.png', value: 440 },
+            { id: 3, name: 'Champagne', imageSrc: 'case.png', value: 50 },
         ]
     };
 
@@ -19,6 +19,37 @@ document.addEventListener('DOMContentLoaded', function() {
     const UI = {};
 
     // --- ФУНКЦІЇ ---
+
+    function loadTelegramData() {
+        try {
+            const tg = window.Telegram.WebApp;
+            // Робимо кнопку "назад" видимою, якщо це доречно
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => {
+                // Повертаємо користувача на головний екран при кліку
+                switchView('game-view');
+            });
+
+            const user = tg.initDataUnsafe.user;
+            
+            if (user) {
+                if (UI.profilePhoto) {
+                    UI.profilePhoto.src = user.photo_url || ''; // Показуємо фото або нічого
+                }
+                if (UI.profileName) {
+                    UI.profileName.textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+                }
+                if (UI.profileId) {
+                    UI.profileId.textContent = `User ID ${user.id}`;
+                }
+            }
+        } catch (error) {
+            console.error("Не вдалося завантажити дані Telegram:", error);
+            // Запасний варіант, якщо додаток відкрито не в Telegram
+            if (UI.profileName) UI.profileName.textContent = "Guest";
+            if (UI.profileId) UI.profileId.textContent = "User ID 0";
+        }
+    }
 
     function updateBalanceDisplay() {
         if (UI.userBalanceElement) UI.userBalanceElement.innerText = Math.round(STATE.userBalance).toLocaleString('uk-UA');
@@ -47,6 +78,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const btnToActivate = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
         if (viewToShow) viewToShow.classList.add('active');
         if (btnToActivate) btnToActivate.classList.add('active');
+
+        // Керування кнопкою "назад" в Telegram
+        if (viewId !== 'game-view' && window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.BackButton.show();
+        } else if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.BackButton.hide();
+        }
+
         if (viewId === 'profile-view') {
             renderInventory();
             renderHistory();
@@ -241,9 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function showResult() {
         UI.resultModal.innerHTML = '';
-
         const totalValue = STATE.lastWonItems.reduce((sum, item) => sum + item.value, 0);
-
         const modalContent = document.createElement('div');
         modalContent.classList.add('modal-content');
         modalContent.innerHTML = `
@@ -282,12 +319,10 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         closeBtn.addEventListener('click', finalizeAction);
-
         spinAgainBtn.addEventListener('click', () => {
             finalizeAction();
             setTimeout(handleCaseClick, 100);
         });
-
         sellBtn.addEventListener('click', () => {
             STATE.userBalance += totalValue;
             updateBalanceDisplay();
@@ -295,20 +330,15 @@ document.addEventListener('DOMContentLoaded', function() {
             STATE.inventory = STATE.inventory.filter(invItem => !idsToRemove.has(invItem.uniqueId));
             finalizeAction();
         });
-
         showModal(UI.resultModal);
     }
 
     function populateCasePreview() {
-        if (!UI.caseContentsPreview) return;
         UI.caseContentsPreview.innerHTML = '';
-        // Сортуємо предмети за ціною для кращого вигляду
         const sortedItems = [...STATE.possibleItems].sort((a, b) => b.value - a.value);
-
         sortedItems.forEach(item => {
             const itemEl = document.createElement('div');
             itemEl.classList.add('preview-item');
-            // Додаємо цінник до перегляду
             itemEl.innerHTML = `
                 <img src="${item.imageSrc}" alt="${item.name}">
                 <div class="inventory-item-price">⭐ ${item.value.toLocaleString('uk-UA')}</div>
@@ -340,6 +370,9 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.historyContent = document.getElementById('history-content');
         UI.profileTabs = document.querySelectorAll('.profile-tab-btn');
         UI.profileContents = document.querySelectorAll('.profile-tab-content');
+        UI.profilePhoto = document.getElementById('profile-photo');
+        UI.profileName = document.getElementById('profile-name');
+        UI.profileId = document.getElementById('profile-id');
         
         if (!UI.caseImageBtn) throw new Error('Не вдалося знайти картинку кейса з id="case-image-btn"');
 
@@ -360,6 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('[data-close-modal="pre-open-modal"]').addEventListener('click', () => hideModal(UI.preOpenModal));
 
         // Початковий стан
+        loadTelegramData(); // Завантажуємо дані Telegram
         updateBalanceDisplay();
         switchView('game-view');
         populateCasePreview();

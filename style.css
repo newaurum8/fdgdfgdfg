@@ -99,14 +99,13 @@ body {
 #spin-view { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 25px; }
 .case-title-main { font-size: 36px; font-weight: bold; margin: 0; }
 
-/* Горизонтальна анімація */
+/* Анімації */
 .spinner-container { width: 100%; position: relative; overflow: hidden; height: 120px; -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent); mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent); }
 .spinner-pointer { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 3px; height: 130px; background-color: var(--accent-color); border-radius: 3px; z-index: 102; box-shadow: 0 0 10px var(--accent-color); }
 .roulette-track { display: flex; position: relative; left: 0; align-items: center; height: 100%; }
 .roulette-item { flex-shrink: 0; width: 120px; height: 120px; margin: 0 5px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 5px; }
 .roulette-item img { max-width: 60%; max-height: 60%; object-fit: contain; }
 
-/* Вертикальна анімація для кількох кейсів */
 .multi-spinner-container { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
 .vertical-spinner { width: 100px; height: 250px; position: relative; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent); mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent); }
 .vertical-spinner::before { content: ''; position: absolute; left: -5px; top: 50%; transform: translateY(-50%); height: 3px; width: 110%; background-color: var(--accent-color); border-radius: 3px; z-index: 102; box-shadow: 0 0 10px var(--accent-color); }
@@ -117,8 +116,13 @@ body {
 
 /* --- ПРОФІЛЬ, ІСТОРІЯ, ІНВЕНТАР --- */
 #profile-view { justify-content: flex-start; gap: 15px; }
-#profile-view h2 { text-align: center; margin: 10px 0 0 0; }
-.profile-tabs { display: flex; background-color: var(--card-bg-color); border-radius: 12px; padding: 5px; width: 100%; max-width: 400px; align-self: center;}
+.profile-header { display: flex; align-items: center; gap: 15px; background-color: var(--card-bg-color); padding: 15px; border-radius: 12px; margin-bottom: 5px;}
+.profile-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.profile-info { display: flex; flex-direction: column; }
+.profile-name { font-size: 20px; font-weight: bold; margin: 0; }
+.profile-id { font-size: 14px; color: var(--secondary-text-color); margin: 4px 0 0 0; }
+
+.profile-tabs { display: flex; background-color: var(--card-bg-color); border-radius: 12px; padding: 5px; width: 100%;}
 .profile-tab-btn { flex-grow: 1; background: transparent; color: var(--secondary-text-color); border: none; padding: 10px; font-size: 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-weight: 500; }
 .profile-tab-btn.active { background: var(--accent-color); color: white; font-weight: bold; }
 .profile-content { width: 100%; flex-grow: 1; position: relative; overflow: hidden;}
@@ -158,7 +162,6 @@ body {
 .preview-item { display: flex; flex-direction: column; align-items: center; }
 .preview-item img { width: 40px; height: 40px; object-fit: contain; }
 
-/* Вікно результатів */
 .result-items-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));

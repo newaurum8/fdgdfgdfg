@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>StarsDrop</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div id="modal-overlay" class="overlay"></div>
@@ -26,22 +27,27 @@
                 <div id="case-view">
                     <div class="case-card">
                         <img id="case-image-btn" src="case.png" alt="Gift Case" class="case-main-image">
-                        <div class="case-card-title">ALL IN</div>
+                        <div class="case-card-title">GIFTS BATTLE</div>
                     </div>
                 </div>
                 <div id="spin-view" class="hidden">
-                    <h1 class="case-title-main">Vintage Cigar ALL IN</h1>
+                    <h1 class="case-title-main">БОМЖ</h1>
                     <div id="spinner-container" class="spinner-container">
                         <div class="spinner-pointer"></div>
                         <div id="roulette" class="roulette-track"></div>
                     </div>
-                    <div id="multi-spinner-container" class="multi-spinner-container hidden">
-                        </div>
+                    <div id="multi-spinner-container" class="multi-spinner-container hidden"></div>
                 </div>
             </div>
 
             <div id="profile-view" class="view">
-                <h2>Профіль</h2>
+                <div class="profile-header">
+                    <img id="profile-photo" src="" alt="User Photo" class="profile-photo">
+                    <div class="profile-info">
+                        <h2 id="profile-name" class="profile-name"></h2>
+                        <p id="profile-id" class="profile-id"></p>
+                    </div>
+                </div>
                 <div class="profile-tabs">
                     <button class="profile-tab-btn active" data-tab="inventory">Інвентар</button>
                     <button class="profile-tab-btn" data-tab="history">Історія</button>
