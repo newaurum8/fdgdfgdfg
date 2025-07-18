@@ -282,7 +282,7 @@ body {
     justify-content: center;
 }
 .nav-icon img {
-    width: 28px; /* Збільшено ширину */
+    width: 40px; /* Збільшено ширину */
     height: 28px; /* Збільшено висоту */
     filter: grayscale(1) brightness(1.5);
     transition: filter 0.2s;
