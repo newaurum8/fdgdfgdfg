@@ -13,7 +13,7 @@
     <div class="mini-app">
     <div id="notification-toast" class="notification-toast"></div>
         <header class="app-header">
-            <div class="header-title">StarsDrop</div>
+            <div class="header-title"><img src="logo.png" alt="StarsDrop" class="header-logo"></div>
             <div class="resource header-balance">
                 <span class="icon">⭐</span>
                 <span id="user-balance">1250</span>
@@ -40,8 +40,50 @@
             </div>
 
             <div id="upgrade-view" class="view">
-                <h2 class="view-title">Апгрейд</h2>
-                <p class="view-description">Розділ в розробці.</p>
+                <div class="upgrade-container">
+                    <h2 class="view-title">Апгрейд предмета</h2>
+                    <div class="upgrade-wheel-container">
+                        <div class="upgrade-pointer"></div>
+                        <div id="upgrade-wheel" class="upgrade-wheel">
+                            <div class="upgrade-wheel-inner">
+                                <div id="upgrade-chance-display" class="upgrade-chance-display">0%</div>
+                                <div id="upgrade-multiplier-display" class="upgrade-multiplier-display">x0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="upgrade-slots-container">
+                        <div id="your-item-slot" class="upgrade-slot">
+                            <div class="slot-placeholder">+</div>
+                            <div class="slot-content hidden">
+                                <img src="" alt="">
+                                <span></span>
+                            </div>
+                            <div class="slot-label">Ваш предмет</div>
+                        </div>
+                        <div class="upgrade-arrow">→</div>
+                        <div id="desired-item-slot" class="upgrade-slot">
+                            <div class="slot-placeholder">+</div>
+                            <div class="slot-content hidden">
+                                <img src="" alt="">
+                                <span></span>
+                            </div>
+                            <div class="slot-label">Желаемый предмет</div>
+                        </div>
+                    </div>
+                    <div id="upgrade-button-container">
+                        <button id="perform-upgrade-btn" class="primary-button" disabled>
+                            <span class="icon">🚀</span> Апгрейд
+                        </button>
+                    </div>
+                    <div class="upgrade-picker-container">
+                        <div class="profile-tabs">
+                            <button id="picker-tab-inventory" class="profile-tab-btn active" data-picker="inventory">Инвентарь</button>
+                            <button id="picker-tab-desired" class="profile-tab-btn" data-picker="desired">Все предметы</button>
+                        </div>
+                        <div id="item-picker-content" class="item-picker-content">
+                            </div>
+                    </div>
+                </div>
             </div>
 
             <div id="contests-view" class="view">

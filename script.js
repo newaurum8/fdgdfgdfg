@@ -12,7 +12,17 @@ document.addEventListener('DOMContentLoaded', function() {
             { id: 1, name: 'Cigar', imageSrc: 'item.png', value: 3170 },
             { id: 2, name: 'Bear', imageSrc: 'item1.png', value: 440 },
             { id: 3, name: 'Sigmaboy', imageSrc: 'case.png', value: 50 },
-        ]
+        ],
+        upgradeState: {
+            yourItem: null,
+            desiredItem: null,
+            chance: 0,
+            multiplier: 0,
+            isUpgrading: false,
+            activePicker: 'inventory',
+            maxChance: 95,
+            currentRotation: 0,
+        },
     };
 
     // --- ОБ'ЄКТ З ЕЛЕМЕНТАМИ DOM ---
@@ -20,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- ФУНКЦІЇ ---
 
-    // Нова функція для показу сповіщень
     function showNotification(message) {
         if (!UI.notificationToast) return;
         UI.notificationToast.textContent = message;
@@ -28,16 +37,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         setTimeout(() => {
             UI.notificationToast.classList.remove('visible');
-        }, 2000); // Повідомлення зникне через 2 секунди
+        }, 2000);
     }
 
     function loadTelegramData() {
         try {
             const tg = window.Telegram.WebApp;
-            tg.BackButton.hide(); 
-
+            tg.BackButton.hide();
             const user = tg.initDataUnsafe.user;
-            
             if (user) {
                 if (UI.profilePhoto) UI.profilePhoto.src = user.photo_url || '';
                 if (UI.profileName) UI.profileName.textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim();
@@ -54,12 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const tg = window.Telegram.WebApp;
             const user = tg.initDataUnsafe.user;
-            
             const app_url = `https://t.me/qqtest134_bot/website?startapp=${user.id}`;
             const text = `Привіт! Приєднуйся до StarsDrop та отримуй круті подарунки!`;
-            
             tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(app_url)}&text=${encodeURIComponent(text)}`);
-
         } catch(e) {
             console.error(e);
             showNotification("Функція доступна лише в Telegram.");
@@ -70,16 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const tg = window.Telegram.WebApp;
             const user = tg.initDataUnsafe.user;
-            
             const app_url = `https://t.me/qqtest134_bot/website?startapp=${user.id}`;
-
             navigator.clipboard.writeText(app_url).then(() => {
-                showNotification('Посилання скопійовано!'); // Використовуємо нову функцію
+                showNotification('Посилання скопійовано!');
             }).catch(err => {
                 console.error('Не вдалося скопіювати посилання: ', err);
-                showNotification('Помилка копіювання.'); // І тут також
+                showNotification('Помилка копіювання.');
             });
-
         } catch(e) {
             console.error(e);
             showNotification("Функція доступна лише в Telegram.");
@@ -130,6 +131,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (viewId === 'profile-view') {
             renderInventory();
             renderHistory();
+        }
+        if (viewId === 'upgrade-view') {
+            resetUpgradeState(true);
         }
     }
 
@@ -260,16 +264,19 @@ document.addEventListener('DOMContentLoaded', function() {
             itemEl.innerHTML = `<img src="${item.imageSrc}" alt="${item.name}">`;
             UI.rouletteTrack.appendChild(itemEl);
         });
-
-        const itemWidth = 120 + 10;
-        const randomOffset = Math.random() * 100 - 50;
-        const targetPosition = (winnerIndex * itemWidth) + randomOffset;
+        
+        const itemWidth = 120;
+        const itemMargin = 5;
+        const totalItemWidth = itemWidth + (itemMargin * 2);
+        
+        const targetPosition = (winnerIndex * totalItemWidth) + (totalItemWidth / 2);
 
         UI.rouletteTrack.style.transition = 'none';
         UI.rouletteTrack.style.left = '0px';
         UI.rouletteTrack.getBoundingClientRect(); 
         UI.rouletteTrack.style.transition = 'left 6s cubic-bezier(0.2, 0.8, 0.2, 1)';
         UI.rouletteTrack.style.left = `calc(50% - ${targetPosition}px)`;
+        
         UI.rouletteTrack.addEventListener('transitionend', showResult, { once: true });
     }
 
@@ -300,9 +307,11 @@ document.addEventListener('DOMContentLoaded', function() {
             spinnerColumn.appendChild(track);
             UI.multiSpinnerContainer.appendChild(spinnerColumn);
 
-            const itemHeight = 100 + 10;
-            const randomOffset = Math.random() * 80 - 40;
-            const targetPosition = (winnerIndex * itemHeight) + randomOffset;
+            const itemHeight = 100;
+            const itemMargin = 5;
+            const totalItemHeight = itemHeight + (itemMargin * 2);
+
+            const targetPosition = (winnerIndex * totalItemHeight) + (totalItemHeight / 2);
 
             track.style.transition = 'none';
             track.style.top = '0px';
@@ -375,6 +384,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function populateCasePreview() {
+        if (!UI.caseContentsPreview) return;
         UI.caseContentsPreview.innerHTML = '';
         const sortedItems = [...STATE.possibleItems].sort((a, b) => b.value - a.value);
         sortedItems.forEach(item => {
@@ -388,10 +398,180 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- ІНІЦІАЛІЗАЦІЯ ---
+    // --- ЛОГИКА АПГРЕЙДА ---
+
+    function resetUpgradeState(resetRotation = false) {
+        STATE.upgradeState.yourItem = null;
+        STATE.upgradeState.desiredItem = null;
+        STATE.upgradeState.isUpgrading = false;
+        
+        if (resetRotation) {
+            STATE.upgradeState.currentRotation = 0;
+            UI.upgradeWheel.style.transition = 'none';
+            UI.upgradeWheel.style.transform = `rotate(0deg)`;
+        }
+
+        calculateUpgradeChance();
+        renderUpgradeUI();
+        renderItemPicker();
+    }
+
+    function calculateUpgradeChance() {
+        const { yourItem, desiredItem, maxChance } = STATE.upgradeState;
+        if (!yourItem || !desiredItem) {
+            STATE.upgradeState.chance = 0;
+            STATE.upgradeState.multiplier = 0;
+            return;
+        }
+
+        if (desiredItem.value <= yourItem.value) {
+            STATE.upgradeState.chance = maxChance;
+            STATE.upgradeState.multiplier = desiredItem.value / yourItem.value;
+            return;
+        }
+
+        const chance = (yourItem.value / desiredItem.value) * (maxChance / 100) * 100;
+        STATE.upgradeState.chance = Math.min(chance, maxChance);
+        STATE.upgradeState.multiplier = desiredItem.value / yourItem.value;
+    }
+
+    function renderUpgradeUI() {
+        const { yourItem, desiredItem, chance, multiplier } = STATE.upgradeState;
+
+        function updateSlot(slot, item) {
+            const placeholder = slot.querySelector('.slot-placeholder');
+            const content = slot.querySelector('.slot-content');
+            if (item) {
+                placeholder.classList.add('hidden');
+                content.classList.remove('hidden');
+                content.querySelector('img').src = item.imageSrc;
+                content.querySelector('img').alt = item.name;
+                content.querySelector('span').textContent = item.name;
+            } else {
+                placeholder.classList.remove('hidden');
+                content.classList.add('hidden');
+            }
+        }
+        updateSlot(UI.yourItemSlot, yourItem);
+        updateSlot(UI.desiredItemSlot, desiredItem);
+
+        UI.upgradeChanceDisplay.textContent = `${chance.toFixed(2)}%`;
+        UI.upgradeMultiplierDisplay.textContent = `x${multiplier.toFixed(2)}`;
+        const angle = (chance / 100) * 360;
+        UI.upgradeWheel.style.backgroundImage = `conic-gradient(var(--accent-color) ${angle}deg, var(--card-bg-color) ${angle}deg)`;
+
+        UI.performUpgradeBtn.disabled = !yourItem || !desiredItem || STATE.upgradeState.isUpgrading;
+    }
+
+    function renderItemPicker() {
+        if (!UI.itemPickerContent) return;
+        UI.itemPickerContent.innerHTML = '';
+        const { activePicker, yourItem, desiredItem } = STATE.upgradeState;
+        
+        const sourceList = activePicker === 'inventory' ? STATE.inventory : STATE.possibleItems;
+
+        if (sourceList.length === 0) {
+            UI.itemPickerContent.innerHTML = `<p class="picker-empty-msg">Список порожній</p>`;
+            return;
+        }
+
+        sourceList.forEach(item => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'picker-item';
+            itemEl.innerHTML = `
+                <img src="${item.imageSrc}" alt="${item.name}">
+                <div class="picker-item-name">${item.name}</div>
+                <div class="picker-item-value">⭐ ${item.value.toLocaleString('uk-UA')}</div>
+            `;
+
+            const isSelectedForYour = yourItem && item.uniqueId && yourItem.uniqueId === item.uniqueId;
+            const isSelectedForDesired = desiredItem && desiredItem.id === item.id;
+            if (isSelectedForYour || isSelectedForDesired) {
+                itemEl.classList.add('selected');
+            }
+
+            itemEl.addEventListener('click', () => handleItemPick(item));
+            UI.itemPickerContent.appendChild(itemEl);
+        });
+    }
+
+    function handleItemPick(item) {
+        if (STATE.upgradeState.isUpgrading) return;
+        const { activePicker } = STATE.upgradeState;
+
+        if (activePicker === 'inventory') {
+            STATE.upgradeState.yourItem = { ...item }; 
+        } else {
+            STATE.upgradeState.desiredItem = { ...item };
+        }
+        
+        calculateUpgradeChance();
+        renderUpgradeUI();
+        renderItemPicker();
+    }
+
+    // *** ИСПРАВЛЕННАЯ И ФИНАЛЬНАЯ ЛОГИКА АПГРЕЙДА ***
+    function handleUpgradeClick() {
+        const { yourItem, desiredItem, chance, isUpgrading } = STATE.upgradeState;
+        if (!yourItem || !desiredItem || isUpgrading) return;
+
+        STATE.upgradeState.isUpgrading = true;
+        UI.performUpgradeBtn.disabled = true;
+
+        const roll = Math.random() * 100;
+        const isSuccess = roll < chance;
+
+        const chanceAngle = (chance / 100) * 360;
+        const randomOffset = Math.random() * 0.9 + 0.05; // Смещение от 5% до 95% сектора, чтобы не попадать на самый край
+
+        // Определяем точку на окружности, где должна остановиться стрелка
+        const stopPoint = isSuccess
+            ? chanceAngle * randomOffset // Точка в секторе выигрыша
+            : chanceAngle + (360 - chanceAngle) * randomOffset; // Точка в секторе проигрыша
+        
+        // Рассчитываем полный угол вращения.
+        // Чтобы стрелка указала на stopPoint, колесо должно повернуться на (360 - stopPoint)
+        const rotation = (5 * 360) + (360 - stopPoint);
+        STATE.upgradeState.currentRotation += rotation;
+
+        UI.upgradeWheel.style.transition = 'transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        
+        setTimeout(() => {
+            UI.upgradeWheel.style.transform = `rotate(${STATE.upgradeState.currentRotation}deg)`;
+        }, 10);
+
+        UI.upgradeWheel.addEventListener('transitionend', () => {
+            setTimeout(() => {
+                const itemIndex = STATE.inventory.findIndex(invItem => invItem.uniqueId === yourItem.uniqueId);
+                if (itemIndex > -1) {
+                    STATE.inventory.splice(itemIndex, 1);
+                }
+
+                if (isSuccess) {
+                    showNotification(`Апгрейд успішний! Ви отримали ${desiredItem.name}.`);
+                    const newItem = { ...desiredItem, uniqueId: Date.now() };
+                    STATE.inventory.push(newItem);
+                    STATE.gameHistory.push({ ...newItem, date: new Date(), name: `Апгрейд до ${newItem.name}`, value: newItem.value });
+                } else {
+                    showNotification(`На жаль, апгрейд не вдався. Предмет втрачено.`);
+                    STATE.gameHistory.push({ ...yourItem, date: new Date(), name: `Невдалий апгрейд ${yourItem.name}`, value: -yourItem.value });
+                }
+                
+                resetUpgradeState(false);
+                renderInventory();
+                renderHistory();
+            }, 1500);
+            
+        }, { once: true });
+    }
+
+    // --- КОНЕЦ ЛОГИКИ АПГРЕЙДА ---
+
+
+    // --- ИНИЦИАЛИЗАЦИЯ ---
     try {
-        // Пошук елементів
-        UI.notificationToast = document.getElementById('notification-toast'); // Шукаємо новий елемент
+        // Поиск элементов
+        UI.notificationToast = document.getElementById('notification-toast');
         UI.userBalanceElement = document.getElementById('user-balance');
         UI.views = document.querySelectorAll('.view');
         UI.navButtons = document.querySelectorAll('.nav-btn');
@@ -410,35 +590,79 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.resultModal = document.getElementById('result-modal');
         UI.inventoryContent = document.getElementById('inventory-content');
         UI.historyContent = document.getElementById('history-content');
-        UI.profileTabs = document.querySelectorAll('.profile-tab-btn');
+        UI.profileTabs = document.querySelectorAll('.profile-tabs:not(.upgrade-picker-container) .profile-tab-btn');
         UI.profileContents = document.querySelectorAll('.profile-tab-content');
         UI.profilePhoto = document.getElementById('profile-photo');
         UI.profileName = document.getElementById('profile-name');
         UI.profileId = document.getElementById('profile-id');
         UI.inviteFriendBtn = document.getElementById('invite-friend-btn');
         UI.copyLinkBtn = document.getElementById('copy-link-btn');
+
+        // Элементы для Апгрейда
+        UI.upgradeView = document.getElementById('upgrade-view');
+        UI.upgradeWheel = document.getElementById('upgrade-wheel');
+        UI.upgradeChanceDisplay = document.getElementById('upgrade-chance-display');
+        UI.upgradeMultiplierDisplay = document.getElementById('upgrade-multiplier-display');
+        UI.yourItemSlot = document.getElementById('your-item-slot');
+        UI.desiredItemSlot = document.getElementById('desired-item-slot');
+        UI.performUpgradeBtn = document.getElementById('perform-upgrade-btn');
+        UI.pickerTabs = document.querySelectorAll('.upgrade-picker-container .profile-tab-btn');
+        UI.itemPickerContent = document.getElementById('item-picker-content');
         
         if (!UI.caseImageBtn) throw new Error('Не вдалося знайти картинку кейса з id="case-image-btn"');
 
-        // Обробники подій
+        // Обработчики событий
         UI.caseImageBtn.addEventListener('click', handleCaseClick);
-        UI.startSpinBtn.addEventListener('click', startSpinProcess);
-        UI.quantitySelector.addEventListener('click', handleQuantityChange);
+        if(UI.startSpinBtn) UI.startSpinBtn.addEventListener('click', startSpinProcess);
+        if (UI.quantitySelector) UI.quantitySelector.addEventListener('click', handleQuantityChange);
         UI.navButtons.forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
-        UI.inviteFriendBtn.addEventListener('click', inviteFriend);
-        UI.copyLinkBtn.addEventListener('click', copyInviteLink);
+        if (UI.inviteFriendBtn) UI.inviteFriendBtn.addEventListener('click', inviteFriend);
+        if (UI.copyLinkBtn) UI.copyLinkBtn.addEventListener('click', copyInviteLink);
+        
         UI.profileTabs.forEach(tab => tab.addEventListener('click', function() {
             UI.profileTabs.forEach(t => t.classList.remove('active'));
             UI.profileContents.forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab + '-content').classList.add('active');
+            this.classList.add('active');
+            const contentId = this.dataset.tab + '-content';
+            const contentEl = document.getElementById(contentId);
+            if(contentEl) contentEl.classList.add('active');
         }));
+        
         UI.modalOverlay.addEventListener('click', () => {
             document.querySelectorAll('.modal.visible').forEach(modal => hideModal(modal));
         });
-        document.querySelector('[data-close-modal="pre-open-modal"]').addEventListener('click', () => hideModal(UI.preOpenModal));
+        const preOpenModalCloseBtn = document.querySelector('[data-close-modal="pre-open-modal"]');
+        if (preOpenModalCloseBtn) preOpenModalCloseBtn.addEventListener('click', () => hideModal(UI.preOpenModal));
 
-        // Початковий стан
+        // --- ОБРАБОТЧИКИ ДЛЯ АПГРЕЙДА ---
+        if (UI.pickerTabs) UI.pickerTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                if (STATE.upgradeState.isUpgrading) return;
+                UI.pickerTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                STATE.upgradeState.activePicker = tab.dataset.picker;
+                
+                UI.yourItemSlot.classList.toggle('active-selection', STATE.upgradeState.activePicker === 'inventory');
+                UI.desiredItemSlot.classList.toggle('active-selection', STATE.upgradeState.activePicker === 'desired');
+                
+                renderItemPicker();
+            });
+        });
+
+        if (UI.yourItemSlot) UI.yourItemSlot.addEventListener('click', () => {
+            if (!STATE.upgradeState.isUpgrading && document.getElementById('picker-tab-inventory')) {
+                 document.getElementById('picker-tab-inventory').click();
+            }
+        });
+        if (UI.desiredItemSlot) UI.desiredItemSlot.addEventListener('click', () => {
+             if (!STATE.upgradeState.isUpgrading && document.getElementById('picker-tab-desired')) {
+                document.getElementById('picker-tab-desired').click();
+             }
+        });
+
+        if (UI.performUpgradeBtn) UI.performUpgradeBtn.addEventListener('click', handleUpgradeClick);
+
+        // Начальное состояние
         loadTelegramData();
         updateBalanceDisplay();
         switchView('game-view');
