@@ -13,7 +13,7 @@
     <div class="mini-app">
     <div id="notification-toast" class="notification-toast"></div>
         <header class="app-header">
-            <div class="header-title"><img src="logo.png" alt="StarsDrop" class="header-logo"></div>
+            <div class="header-title">StarsDrop</div>
             <div class="resource header-balance">
                 <span class="icon">⭐</span>
                 <span id="user-balance">1250</span>
@@ -87,8 +87,38 @@
             </div>
 
             <div id="contests-view" class="view">
-                <h2 class="view-title">Конкурси</h2>
-                <p class="view-description">Розділ в розробці.</p>
+                <div class="contest-card">
+                    <div class="contest-header">
+                        <span class="contest-header__title">Конкурс за билеты</span>
+                        <span class="contest-header__timer" id="contest-timer"></span>
+                    </div>
+
+                    <div class="contest-item">
+                        <img src="item.png" alt="Nail Bracelet" class="contest-item__image">
+                        <div class="contest-item__info">
+                            <div class="contest-item__name">Cigar</div>
+                            <div class="contest-item__meta">
+                                <span>Твои билеты: <b id="user-tickets-display">0</b></span>
+                                <span>👥 18</span>
+                                <a href="#" class="contest-item__link">Последние победители</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="purchase-section">
+                        <h3 class="purchase-section__title">Покупка билетов</h3>
+                        <div class="purchase-controls">
+                            <button class="primary-button" id="buy-ticket-btn">
+                                Купить билет
+                            </button>
+                            <div class="quantity-control">
+                                <button id="ticket-quantity-minus" class="quantity-control__btn">-</button>
+                                <input type="text" id="ticket-quantity-input" class="quantity-control__input" value="1" readonly>
+                                <button id="ticket-quantity-plus" class="quantity-control__btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="friends-view" class="view">

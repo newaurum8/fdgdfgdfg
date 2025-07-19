@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
         openQuantity: 1,
         casePrice: 100,
         lastWonItems: [],
+        contestTicketPrice: 100,
+        ticketQuantity: 1,
+        userTickets: 0,
+        contestEndDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000 + 15 * 60 * 60 * 1000), // 6 дней 15 часов от сейчас
         possibleItems: [
             { id: 1, name: 'Cigar', imageSrc: 'item.png', value: 3170 },
             { id: 2, name: 'Bear', imageSrc: 'item1.png', value: 440 },
@@ -134,6 +138,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (viewId === 'upgrade-view') {
             resetUpgradeState(true);
+        }
+        if (viewId === 'contests-view') {
+            updateContestUI();
         }
     }
 
@@ -398,6 +405,66 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- ЛОГИКА КОНКУРСОВ ---
+    function updateContestUI() {
+        if (!UI.buyTicketBtn) return;
+        const totalCost = STATE.contestTicketPrice * STATE.ticketQuantity;
+        UI.buyTicketBtn.innerHTML = `Купить билет <span class="icon">⭐</span> ${totalCost.toLocaleString('uk-UA')}`;
+        UI.ticketQuantityInput.value = STATE.ticketQuantity;
+        UI.userTicketsDisplay.textContent = STATE.userTickets;
+        
+        UI.buyTicketBtn.disabled = STATE.userBalance < totalCost;
+    }
+
+    function handleTicketQuantityChange(amount) {
+        const newQuantity = STATE.ticketQuantity + amount;
+        if (newQuantity >= 1) {
+            STATE.ticketQuantity = newQuantity;
+            updateContestUI();
+        }
+    }
+
+    function buyTickets() {
+        const totalCost = STATE.contestTicketPrice * STATE.ticketQuantity;
+        if (STATE.userBalance < totalCost) {
+            showNotification('Недостатньо коштів.');
+            return;
+        }
+
+        STATE.userBalance -= totalCost;
+        STATE.userTickets += STATE.ticketQuantity;
+
+        showNotification(`Ви успішно придбали ${STATE.ticketQuantity} білет(ів)!`);
+        
+        updateBalanceDisplay();
+        updateContestUI();
+    }
+
+    function updateTimer() {
+        if (!UI.contestTimer) return;
+        const now = new Date();
+        const timeLeft = STATE.contestEndDate - now;
+
+        if (timeLeft <= 0) {
+            UI.contestTimer.textContent = 'Конкурс завершено';
+            // Можно остановить таймер, если нужно
+            // clearInterval(timerIntervalId); 
+            return;
+        }
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        const paddedHours = String(hours).padStart(2, '0');
+        const paddedMinutes = String(minutes).padStart(2, '0');
+        const paddedSeconds = String(seconds).padStart(2, '0');
+
+        UI.contestTimer.textContent = `${days} дней ${paddedHours}:${paddedMinutes}:${paddedSeconds} 🕔`;
+    }
+    // --- КОНЕЦ ЛОГИКИ КОНКУРСОВ ---
+
     // --- ЛОГИКА АПГРЕЙДА ---
 
     function resetUpgradeState(resetRotation = false) {
@@ -510,7 +577,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderItemPicker();
     }
 
-    // *** ИСПРАВЛЕННАЯ И ФИНАЛЬНАЯ ЛОГИКА АПГРЕЙДА ***
     function handleUpgradeClick() {
         const { yourItem, desiredItem, chance, isUpgrading } = STATE.upgradeState;
         if (!yourItem || !desiredItem || isUpgrading) return;
@@ -522,15 +588,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const isSuccess = roll < chance;
 
         const chanceAngle = (chance / 100) * 360;
-        const randomOffset = Math.random() * 0.9 + 0.05; // Смещение от 5% до 95% сектора, чтобы не попадать на самый край
+        const randomOffset = Math.random() * 0.9 + 0.05;
 
-        // Определяем точку на окружности, где должна остановиться стрелка
         const stopPoint = isSuccess
-            ? chanceAngle * randomOffset // Точка в секторе выигрыша
-            : chanceAngle + (360 - chanceAngle) * randomOffset; // Точка в секторе проигрыша
+            ? chanceAngle * randomOffset
+            : chanceAngle + (360 - chanceAngle) * randomOffset;
         
-        // Рассчитываем полный угол вращения.
-        // Чтобы стрелка указала на stopPoint, колесо должно повернуться на (360 - stopPoint)
         const rotation = (5 * 360) + (360 - stopPoint);
         STATE.upgradeState.currentRotation += rotation;
 
@@ -598,6 +661,14 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.inviteFriendBtn = document.getElementById('invite-friend-btn');
         UI.copyLinkBtn = document.getElementById('copy-link-btn');
 
+        // Элементы для Конкурсов
+        UI.contestTimer = document.getElementById('contest-timer');
+        UI.buyTicketBtn = document.getElementById('buy-ticket-btn');
+        UI.ticketQuantityInput = document.getElementById('ticket-quantity-input');
+        UI.ticketQuantityPlus = document.getElementById('ticket-quantity-plus');
+        UI.ticketQuantityMinus = document.getElementById('ticket-quantity-minus');
+        UI.userTicketsDisplay = document.getElementById('user-tickets-display');
+
         // Элементы для Апгрейда
         UI.upgradeView = document.getElementById('upgrade-view');
         UI.upgradeWheel = document.getElementById('upgrade-wheel');
@@ -618,6 +689,11 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.navButtons.forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
         if (UI.inviteFriendBtn) UI.inviteFriendBtn.addEventListener('click', inviteFriend);
         if (UI.copyLinkBtn) UI.copyLinkBtn.addEventListener('click', copyInviteLink);
+        
+        // Обработчики для Конкурсов
+        if (UI.buyTicketBtn) UI.buyTicketBtn.addEventListener('click', buyTickets);
+        if (UI.ticketQuantityPlus) UI.ticketQuantityPlus.addEventListener('click', () => handleTicketQuantityChange(1));
+        if (UI.ticketQuantityMinus) UI.ticketQuantityMinus.addEventListener('click', () => handleTicketQuantityChange(-1));
         
         UI.profileTabs.forEach(tab => tab.addEventListener('click', function() {
             UI.profileTabs.forEach(t => t.classList.remove('active'));
@@ -667,6 +743,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateBalanceDisplay();
         switchView('game-view');
         populateCasePreview();
+        setInterval(updateTimer, 1000); // Запускаем таймер
         
     } catch (error) {
         console.error("Помилка під час ініціалізації:", error);
