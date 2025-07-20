@@ -802,7 +802,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const itemHeight = 90; // 80px height + 10px margin
             const targetPosition = (reelLength - 2) * itemHeight;
-            const spinDuration = 2 + index * 0.5; // Each reel spins a bit longer
+            const spinDuration = 4 + index * 0.5; // Each reel spins a bit longer
             
             track.style.transition = `top ${spinDuration}s cubic-bezier(0.25, 1, 0.5, 1)`;
             track.style.top = `-${targetPosition}px`;
