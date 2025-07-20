@@ -13,7 +13,7 @@
     <div class="mini-app">
     <div id="notification-toast" class="notification-toast"></div>
         <header class="app-header">
-            <div class="header-title">StarsDrop</div>
+            <img src="logo.png" alt="StarsDrop Logo" class="header-logo">
             <div class="resource header-balance">
                 <span class="icon">⭐</span>
                 <span id="user-balance">1250</span>
@@ -37,6 +37,147 @@
                     </div>
                     <div id="multi-spinner-container" class="multi-spinner-container hidden"></div>
                 </div>
+            </div>
+
+            <div id="games-menu-view" class="view">
+                <h2 class="view-title">Игры</h2>
+                <div class="games-menu-grid">
+                    <button class="game-menu-btn" data-view="upgrade-view">
+                        <img src="update.png" alt="Апгрейды">
+                        <span>Апгрейды</span>
+                    </button>
+                     <button class="game-menu-btn" data-view="miner-view">
+                        <img src="miner.png" alt="Минер">
+                        <span>Минер</span>
+                    </button>
+                    <button class="game-menu-btn" data-view="coinflip-view">
+                        <img src="coin.png" alt="Орел и Решка">
+                        <span>Орел и Решка</span>
+                    </button>
+                    <button class="game-menu-btn" data-view="rps-view">
+                        <img src="paper.PNG" alt="Камень ножницы бумага">
+                        <span>Камень ножницы бумага</span>
+                    </button>
+                    <button class="game-menu-btn" data-view="slots-view">
+                        <img src="game.png" alt="Слоты">
+                        <span>Слоты</span>
+                    </button>
+                    <button class="game-menu-btn" data-view="tower-view">
+                        <img src="tower.png" alt="Вежа">
+                        <span>Вежа</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="tower-view" class="view">
+                <div class="tower-container">
+                    <h2 class="view-title">Вежа</h2>
+                    <div class="tower-main-content">
+                        <div id="tower-payouts" class="tower-payouts"></div>
+                        <div id="tower-grid" class="tower-grid"></div>
+                    </div>
+                    <div class="tower-controls">
+                        <div id="tower-pre-game-controls">
+                            <div class="control-group">
+                                <label for="tower-bet-input">Ставка</label>
+                                <input type="number" id="tower-bet-input" class="miner-input" value="100">
+                            </div>
+                            <button id="tower-start-btn" class="primary-button">Начать игру</button>
+                        </div>
+                        <div id="tower-in-game-controls" class="hidden">
+                             <button id="tower-cashout-btn" class="secondary-button">Забрать <span id="tower-cashout-amount">0</span> ⭐</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="slots-view" class="view">
+                <div class="slots-container">
+                    <h2 class="view-title">Слоты</h2>
+                    <div class="slots-machine">
+                        <div class="slots-reels-container">
+                            <div class="slots-reel">
+                                <div class="slots-track" id="slots-track-1"></div>
+                            </div>
+                            <div class="slots-reel">
+                                <div class="slots-track" id="slots-track-2"></div>
+                            </div>
+                            <div class="slots-reel">
+                                <div class="slots-track" id="slots-track-3"></div>
+                            </div>
+                        </div>
+                        <div class="slots-payline"></div>
+                    </div>
+                    <div class="slots-controls">
+                        <div class="control-group">
+                            <label for="slots-bet-input">Ставка</label>
+                            <input type="number" id="slots-bet-input" class="miner-input" value="100">
+                        </div>
+                        <button id="slots-spin-btn" class="primary-button">Крутить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="miner-view" class="view">
+                <div class="miner-container">
+                    <h2 class="view-title">Минер</h2>
+                    <div class="miner-controls">
+                        <div class="control-group">
+                            <label for="miner-bet-input">Ставка</label>
+                            <input type="number" id="miner-bet-input" class="miner-input" value="100">
+                        </div>
+                    </div>
+                    <div id="miner-grid" class="miner-grid"></div>
+                    <div class="miner-info">
+                         <p>Следующий выигрыш:<span id="miner-next-win">0</span></p>
+                         <p>Общий выигрыш:<span id="miner-total-win">0</span></p>
+                    </div>
+                    <button id="miner-start-btn" class="primary-button">Начать игру</button>
+                    <button id="miner-cashout-btn" class="secondary-button hidden">Забрать выигрыш</button>
+                </div>
+            </div>
+
+            <div id="coinflip-view" class="view">
+                <div class="coinflip-container">
+                    <h2 class="view-title">Орел и Решка</h2>
+                    <div id="coin" class="coin">
+                        <div class="coin-heads">
+                            <img src="reska.PNG" alt="Орел">
+                        </div>
+                        <div class="coin-tails">
+                            <img src="orel.PNG" alt="Решка">
+                        </div>
+                    </div>
+                    <div class="coinflip-result-message" id="coinflip-result-message"></div>
+                    <div class="control-group">
+                        <label for="coinflip-bet-input">Ставка:</label>
+                        <input type="number" id="coinflip-bet-input" class="miner-input" value="100">
+                    </div>
+                    <div class="coinflip-choices">
+                        <button class="primary-button" id="coinflip-heads-btn">Орел</button>
+                        <button class="primary-button" id="coinflip-tails-btn">Решка</button>
+                    </div>
+                </div>
+            </div>
+            <div id="rps-view" class="view">
+                 <div class="rps-container">
+                     <h2 class="view-title">Камень, Ножницы, Бумага</h2>
+                     <div class="rps-result-message" id="rps-result-message"></div>
+                     <div class="rps-choices">
+                         <div class="rps-choice" id="rps-player-choice">?</div>
+                         <div class="rps-vs">VS</div>
+                         <div class="rps-choice" id="rps-computer-choice">?</div>
+                     </div>
+                     <div class="control-group">
+                         <label for="rps-bet-input">Ставка:</label>
+                         <input type="number" id="rps-bet-input" class="miner-input" value="100">
+                     </div>
+                     <div class="rps-buttons">
+                         <button class="primary-button" data-choice="rock">Камень</button>
+                         <button class="primary-button" data-choice="paper">Бумага</button>
+                         <button class="primary-button" data-choice="scissors">Ножницы</button>
+                     </div>
+                 </div>
             </div>
 
             <div id="upgrade-view" class="view">
@@ -156,8 +297,8 @@
              <button class="nav-btn" data-view="contests-view">
                 <div class="nav-icon"><img src="gift.png" alt="Конкурси"></div><div class="nav-label">Конкурси</div>
             </button>
-            <button class="nav-btn" data-view="upgrade-view">
-                <div class="nav-icon"><img src="update.png" alt="Апгрейд"></div><div class="nav-label">Апгрейд</div>
+            <button class="nav-btn" data-view="games-menu-view">
+                <div class="nav-icon"><img src="game.png" alt="Игры"></div><div class="nav-label">Игры</div>
             </button>
             <button class="nav-btn active" data-view="game-view">
                 <div class="nav-icon"><img src="case_button.png" alt="Кейси"></div><div class="nav-label">Кейси</div>
