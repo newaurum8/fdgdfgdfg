@@ -72,21 +72,19 @@
             <div id="tower-view" class="view">
                 <div class="tower-container">
                     <h2 class="view-title">Вежа</h2>
+                     <div id="tower-pre-game-controls" class="tower-controls">
+                        <div class="control-group">
+                            <label for="tower-bet-input">Ставка</label>
+                            <input type="number" id="tower-bet-input" class="miner-input" value="100">
+                        </div>
+                        <button id="tower-start-btn" class="primary-button">Начать игру</button>
+                    </div>
                     <div class="tower-main-content">
                         <div id="tower-payouts" class="tower-payouts"></div>
                         <div id="tower-grid" class="tower-grid"></div>
                     </div>
-                    <div class="tower-controls">
-                        <div id="tower-pre-game-controls">
-                            <div class="control-group">
-                                <label for="tower-bet-input">Ставка</label>
-                                <input type="number" id="tower-bet-input" class="miner-input" value="100">
-                            </div>
-                            <button id="tower-start-btn" class="primary-button">Начать игру</button>
-                        </div>
-                        <div id="tower-in-game-controls" class="hidden">
-                             <button id="tower-cashout-btn" class="secondary-button">Забрать <span id="tower-cashout-amount">0</span> ⭐</button>
-                        </div>
+                    <div id="tower-in-game-controls" class="tower-controls hidden">
+                         <button id="tower-cashout-btn" class="secondary-button">Забрать <span id="tower-cashout-amount">0</span> ⭐</button>
                     </div>
                 </div>
             </div>
@@ -122,18 +120,20 @@
                 <div class="miner-container">
                     <h2 class="view-title">Минер</h2>
                     <div class="miner-controls">
-                        <div class="control-group">
+                         <div class="control-group">
                             <label for="miner-bet-input">Ставка</label>
                             <input type="number" id="miner-bet-input" class="miner-input" value="100">
                         </div>
+                        <button id="miner-start-btn" class="primary-button">Начать игру</button>
+                        <button id="miner-cashout-btn" class="secondary-button hidden">Забрать выигрыш</button>
                     </div>
                     <div id="miner-grid" class="miner-grid"></div>
-                    <div class="miner-info">
-                         <p>Следующий выигрыш:<span id="miner-next-win">0</span></p>
-                         <p>Общий выигрыш:<span id="miner-total-win">0</span></p>
+                    <div class="miner-info-wrapper hidden">
+                        <div class="miner-info">
+                             <p>Следующий выигрыш:<span id="miner-next-win">0</span></p>
+                             <p>Общий выигрыш:<span id="miner-total-win">0</span></p>
+                        </div>
                     </div>
-                    <button id="miner-start-btn" class="primary-button">Начать игру</button>
-                    <button id="miner-cashout-btn" class="secondary-button hidden">Забрать выигрыш</button>
                 </div>
             </div>
 
@@ -142,10 +142,10 @@
                     <h2 class="view-title">Орел и Решка</h2>
                     <div id="coin" class="coin">
                         <div class="coin-heads">
-                            <img src="reska.PNG" alt="Орел">
+                            <img src="orel.png" alt="Орел">
                         </div>
                         <div class="coin-tails">
-                            <img src="orel.PNG" alt="Решка">
+                            <img src="reska.png" alt="Решка">
                         </div>
                     </div>
                     <div class="coinflip-result-message" id="coinflip-result-message"></div>
@@ -183,38 +183,40 @@
             <div id="upgrade-view" class="view">
                 <div class="upgrade-container">
                     <h2 class="view-title">Апгрейд предмета</h2>
-                    <div class="upgrade-wheel-container">
-                        <div class="upgrade-pointer"></div>
-                        <div id="upgrade-wheel" class="upgrade-wheel">
-                            <div class="upgrade-wheel-inner">
-                                <div id="upgrade-chance-display" class="upgrade-chance-display">0%</div>
-                                <div id="upgrade-multiplier-display" class="upgrade-multiplier-display">x0.00</div>
+                    <div class="upgrade-top-panel">
+                        <div class="upgrade-wheel-container">
+                            <div id="upgrade-pointer" class="upgrade-pointer"></div>
+                            <div id="upgrade-wheel" class="upgrade-wheel">
+                                <div class="upgrade-wheel-inner">
+                                    <div id="upgrade-chance-display" class="upgrade-chance-display">0%</div>
+                                    <div id="upgrade-multiplier-display" class="upgrade-multiplier-display">x0.00</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="upgrade-slots-container">
-                        <div id="your-item-slot" class="upgrade-slot">
-                            <div class="slot-placeholder">+</div>
-                            <div class="slot-content hidden">
-                                <img src="" alt="">
-                                <span></span>
+                        <div class="upgrade-slots-container">
+                            <div id="your-item-slot" class="upgrade-slot">
+                                <div class="slot-placeholder">+</div>
+                                <div class="slot-content hidden">
+                                    <img src="" alt="">
+                                    <span></span>
+                                </div>
+                                <div class="slot-label">Ваш предмет</div>
                             </div>
-                            <div class="slot-label">Ваш предмет</div>
-                        </div>
-                        <div class="upgrade-arrow">→</div>
-                        <div id="desired-item-slot" class="upgrade-slot">
-                            <div class="slot-placeholder">+</div>
-                            <div class="slot-content hidden">
-                                <img src="" alt="">
-                                <span></span>
+                            <div class="upgrade-arrow">→</div>
+                            <div id="desired-item-slot" class="upgrade-slot">
+                                <div class="slot-placeholder">+</div>
+                                <div class="slot-content hidden">
+                                    <img src="" alt="">
+                                    <span></span>
+                                </div>
+                                <div class="slot-label">Желаемый предмет</div>
                             </div>
-                            <div class="slot-label">Желаемый предмет</div>
                         </div>
-                    </div>
-                    <div id="upgrade-button-container">
-                        <button id="perform-upgrade-btn" class="primary-button" disabled>
-                            <span class="icon">🚀</span> Апгрейд
-                        </button>
+                        <div id="upgrade-button-container">
+                            <button id="perform-upgrade-btn" class="primary-button" disabled>
+                                <span class="icon">🚀</span> Апгрейд
+                            </button>
+                        </div>
                     </div>
                     <div class="upgrade-picker-container">
                         <div class="profile-tabs">

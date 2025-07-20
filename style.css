@@ -25,7 +25,7 @@ body {
 
 .icon { font-style: normal; }
 .hidden { display: none !important; }
-.view-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; text-align: center; }
+.view-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; text-align: center; flex-shrink: 0; }
 .view-description { color: var(--secondary-text-color); text-align: center; }
 
 .mini-app { 
@@ -94,6 +94,8 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
+    overflow-y: auto; /* Добавлено для прокрутки */
+    padding-bottom: 20px; /* Добавлено для отступа снизу */
 }
 
 .view.active {
@@ -241,32 +243,31 @@ body {
 /* --- СТИЛИ АПГРЕЙДА --- */
 #upgrade-view {
     justify-content: flex-start;
-    padding-top: 10px;
-    padding-bottom: 15px;
-    overflow-y: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
 }
-#upgrade-view::-webkit-scrollbar {
-    display: none;
-}
-
 .upgrade-container {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
+    flex-grow: 1;
 }
-
+.upgrade-top-panel {
+    flex-shrink: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 .upgrade-wheel-container {
     position: relative;
-    width: 180px;
-    height: 180px;
+    width: 150px;
+    height: 150px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
+    margin: 0 auto;
 }
 
 .upgrade-pointer {
@@ -280,6 +281,8 @@ body {
     border-right: 10px solid transparent;
     border-top: 15px solid var(--accent-color);
     z-index: 10;
+    transition: transform 6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-origin: 50% 85px; 
 }
 
 .upgrade-wheel {
@@ -309,9 +312,8 @@ body {
     text-align: center;
 }
 
-.upgrade-chance-display { font-size: 32px; font-weight: bold; }
-.upgrade-multiplier-display { font-size: 16px; color: var(--secondary-text-color); font-weight: 500; }
-
+.upgrade-chance-display { font-size: 28px; font-weight: bold; }
+.upgrade-multiplier-display { font-size: 14px; color: var(--secondary-text-color); font-weight: 500; }
 .upgrade-slots-container {
     display: flex;
     justify-content: space-between;
@@ -324,7 +326,7 @@ body {
 .upgrade-slot {
     flex-basis: 0;
     flex-grow: 1;
-    height: 130px;
+    height: 120px;
     background-color: var(--card-bg-color);
     border-radius: 12px;
     display: flex;
@@ -345,7 +347,7 @@ body {
 
 .upgrade-slot .slot-placeholder { font-size: 40px; color: #4b5563; }
 .upgrade-slot .slot-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 8px; }
-.upgrade-slot .slot-content img { max-width: 60px; max-height: 60px; object-fit: contain; }
+.upgrade-slot .slot-content img { max-width: 50px; max-height: 50px; object-fit: contain; }
 .upgrade-slot .slot-content span { font-size: 14px; font-weight: 500; }
 .slot-label { font-size: 12px; color: var(--secondary-text-color); margin-top: 8px; }
 .upgrade-arrow { font-size: 24px; color: var(--secondary-text-color); }
@@ -363,8 +365,7 @@ body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    min-height: 200px;
-    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .item-picker-content {
@@ -556,41 +557,13 @@ body {
     width: 100px;
 }
 
-/* --- СТИЛИ МИНЕРА --- */
-#miner-view {
-    justify-content: flex-start;
-    overflow-y: auto;
-    padding-bottom: 15px;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-#miner-view::-webkit-scrollbar {
-    display: none;
-}
-.miner-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 10px;
-    box-sizing: border-box;
-}
-.miner-controls {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    background-color: var(--card-bg-color);
-    padding: 15px;
-    border-radius: 12px;
-}
+/* --- ОБЩИЕ СТИЛИ ИГР --- */
 .control-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
+    width: 100%;
 }
 .control-group label {
     font-size: 14px;
@@ -607,6 +580,35 @@ body {
     width: 100px;
     font-size: 16px;
 }
+
+/* --- СТИЛИ МИНЕРА --- */
+#miner-view {
+    justify-content: flex-start;
+}
+.miner-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+}
+.miner-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    background-color: var(--card-bg-color);
+    padding: 15px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+.miner-controls .primary-button, .miner-controls .secondary-button {
+    width: 100%;
+    padding: 12px 20px;
+}
 .miner-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -615,6 +617,7 @@ body {
     width: 100%;
     max-width: 300px;
     aspect-ratio: 3 / 4;
+    margin: auto 0;
 }
 .miner-cell {
     background-color: var(--card-bg-color);
@@ -658,6 +661,14 @@ body {
 .miner-cell.opened img {
     opacity: 1;
 }
+.miner-info-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    flex-shrink: 0;
+    margin-top: auto;
+}
 .miner-info {
     text-align: center;
     width: 100%;
@@ -684,14 +695,23 @@ body {
 #miner-cashout-btn {
     background-color: var(--success-color);
 }
+#miner-cashout-btn:disabled {
+    background-color: var(--dark-button-bg);
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-/* --- СТИЛИ ДЛЯ ОРЛА И РЕШКИ --- */
-.coinflip-container {
+
+/* --- СТИЛИ ДЛЯ ОРЛА И РЕШКИ И КНБ --- */
+#coinflip-view, #rps-view {
+    justify-content: space-around;
+}
+.coinflip-container, .rps-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     width: 100%;
 }
 .coin {
@@ -720,24 +740,14 @@ body {
 .coin-tails {
     transform: rotateY(180deg);
 }
-.coinflip-result-message {
+.coinflip-result-message, .rps-result-message {
     font-size: 18px;
     font-weight: bold;
     min-height: 25px;
 }
-.coinflip-choices {
+.coinflip-choices, .rps-buttons {
     display: flex;
     gap: 15px;
-}
-
-/* --- СТИЛИ ДЛЯ КАМЕНЬ-НОЖНИЦЫ-БУМАГА --- */
-.rps-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
 }
 .rps-choices {
     display: flex;
@@ -755,27 +765,28 @@ body {
     justify-content: center;
     align-items: center;
 }
-.rps-result-message {
-    font-size: 18px;
-    font-weight: bold;
-    min-height: 25px;
+.rps-choice.spinning {
+    animation: rps-spin 0.2s linear infinite;
 }
-.rps-buttons {
-    display: flex;
-    gap: 10px;
+
+@keyframes rps-spin {
+    0% { content: '✊'; }
+    33% { content: '✋'; }
+    66% { content: '✌️'; }
+    100% { content: '✊'; }
 }
 
 
 /* --- СТИЛИ ДЛЯ СЛОТОВ --- */
 #slots-view {
-    justify-content: center;
+    justify-content: space-around;
 }
 .slots-container {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 25px;
+    gap: 20px;
 }
 .slots-machine {
     width: 100%;
@@ -860,14 +871,6 @@ body {
 /* --- ОБНОВЛЕННЫЕ СТИЛИ ДЛЯ ВЕЖИ (TOWER) --- */
 #tower-view {
     justify-content: flex-start;
-    align-items: center;
-    overflow-y: auto;
-    padding-bottom: 20px;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-#tower-view::-webkit-scrollbar {
-    display: none;
 }
 .tower-container {
     width: 100%;
@@ -875,7 +878,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    flex-shrink: 0;
+    flex-grow: 1;
 }
 .tower-main-content {
     display: flex;
@@ -883,14 +886,14 @@ body {
     width: 100%;
     justify-content: center;
     align-items: center;
-    margin-top: 10px;
     padding: 15px;
     background-color: var(--card-bg-color);
     border-radius: 16px;
+    margin: auto 0;
 }
 .tower-payouts {
     display: flex;
-    flex-direction: column-reverse; /* Payouts grow upwards */
+    flex-direction: column-reverse;
     gap: 8px;
     width: 100px;
 }
@@ -913,7 +916,7 @@ body {
 }
 .tower-grid {
     display: flex;
-    flex-direction: column-reverse; /* Tower grows upwards */
+    flex-direction: column-reverse;
     gap: 8px;
     width: 180px;
 }
@@ -984,7 +987,19 @@ body {
     padding: 15px;
     background-color: var(--card-bg-color);
     border-radius: 12px;
-    margin-top: 15px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+.tower-controls .primary-button, .tower-controls .secondary-button {
+    width: 100%;
+}
+#tower-in-game-controls {
+    margin-top: auto;
+    background: transparent;
+    padding: 0;
 }
 #tower-in-game-controls .secondary-button {
     background-color: var(--success-color);

@@ -492,9 +492,9 @@ document.addEventListener('DOMContentLoaded', function() {
         STATE.upgradeState.isUpgrading = false;
         if (resetRotation) {
             STATE.upgradeState.currentRotation = 0;
-            if (UI.upgradeWheel) {
-                UI.upgradeWheel.style.transition = 'none';
-                UI.upgradeWheel.style.transform = `rotate(0deg)`;
+            if (UI.upgradePointer) {
+                UI.upgradePointer.style.transition = 'none';
+                UI.upgradePointer.style.transform = `translateX(-50%) rotate(0deg)`;
             }
         }
         calculateUpgradeChance();
@@ -581,13 +581,16 @@ document.addEventListener('DOMContentLoaded', function() {
         STATE.upgradeState.isUpgrading = true;
         UI.performUpgradeBtn.disabled = true;
         const isSuccess = (Math.random() * 100) < chance;
-        const chanceAngle = (chance / 100) * 360, randomOffset = Math.random() * 0.9 + 0.05;
+        const chanceAngle = (chance / 100) * 360;
+        const randomOffset = Math.random() * 0.9 + 0.05;
         const stopPoint = isSuccess ? chanceAngle * randomOffset : chanceAngle + (360 - chanceAngle) * randomOffset;
-        const rotation = (5 * 360) + (360 - stopPoint);
-        STATE.upgradeState.currentRotation += rotation;
-        UI.upgradeWheel.style.transition = 'transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)';
-        setTimeout(() => UI.upgradeWheel.style.transform = `rotate(${STATE.upgradeState.currentRotation}deg)`, 10);
-        UI.upgradeWheel.addEventListener('transitionend', () => {
+        const rotation = (5 * 360) + stopPoint;
+        STATE.upgradeState.currentRotation = rotation;
+
+        UI.upgradePointer.style.transition = 'transform 6s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        UI.upgradePointer.style.transform = `translateX(-50%) rotate(${STATE.upgradeState.currentRotation}deg)`;
+
+        UI.upgradePointer.addEventListener('transitionend', () => {
             setTimeout(() => {
                 const itemIndex = STATE.inventory.findIndex(invItem => invItem.uniqueId === yourItem.uniqueId);
                 if (itemIndex > -1) STATE.inventory.splice(itemIndex, 1);
@@ -600,7 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showNotification(`На жаль, апгрейд не вдався. Предмет втрачено.`);
                     STATE.gameHistory.push({ ...yourItem, date: new Date(), name: `Невдалий апгрейд ${yourItem.name}`, value: -yourItem.value });
                 }
-                resetUpgradeState(false);
+                resetUpgradeState(true);
                 renderInventory();
                 renderHistory();
             }, 1500);
@@ -618,6 +621,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (UI.minerBetInput) UI.minerBetInput.disabled = false;
         if (UI.minerStartBtn) UI.minerStartBtn.classList.remove('hidden');
         if (UI.minerCashoutBtn) UI.minerCashoutBtn.classList.add('hidden');
+        if (UI.minerInfoWrapper) UI.minerInfoWrapper.classList.add('hidden');
     }
 
     function startMinerGame() {
@@ -656,6 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.minerStartBtn.classList.add('hidden');
         UI.minerCashoutBtn.classList.remove('hidden');
         UI.minerCashoutBtn.disabled = true;
+        UI.minerInfoWrapper.classList.remove('hidden');
     }
 
     function renderMinerGrid(isGameActive = false) {
@@ -717,7 +722,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateMinerUI() {
-        if (!UI.minerGrid) return;
+        if (!UI.minerNextWin || !UI.minerTotalWin) return;
 
         if (STATE.minerState.isActive) {
             UI.minerNextWin.textContent = getNextWin().toFixed(2);
@@ -779,9 +784,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const results = [];
         const tracks = [UI.slotsTrack1, UI.slotsTrack2, UI.slotsTrack3];
-        let completedReels = 0;
-
-        tracks.forEach((track, index) => {
+        
+        function spinReel(index) {
+            if (index >= tracks.length) {
+                processSlotsResult(results, bet);
+                return;
+            }
+        
+            const track = tracks[index];
             const symbols = STATE.slotsState.symbols;
             const reelLength = 30;
             const finalSymbol = symbols[Math.floor(Math.random() * symbols.length)];
@@ -802,18 +812,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const itemHeight = 90; // 80px height + 10px margin
             const targetPosition = (reelLength - 2) * itemHeight;
-            const spinDuration = 4 + index * 0.5; // Each reel spins a bit longer
+            const spinDuration = 2 + index * 0.5;
             
             track.style.transition = `top ${spinDuration}s cubic-bezier(0.25, 1, 0.5, 1)`;
             track.style.top = `-${targetPosition}px`;
             
             track.addEventListener('transitionend', () => {
-                completedReels++;
-                if (completedReels === tracks.length) {
-                    processSlotsResult(results, bet);
-                }
+                setTimeout(() => spinReel(index + 1), 300); // Задержка между остановками
             }, { once: true });
-        });
+        }
+
+        spinReel(0);
     }
 
     function processSlotsResult(results, bet) {
@@ -853,7 +862,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         UI.towerPreGameControls.classList.remove('hidden');
         UI.towerInGameControls.classList.add('hidden');
-        
+        if (UI.towerBetInput) UI.towerBetInput.disabled = false;
+
         renderTower();
         renderTowerPayouts();
     }
@@ -882,6 +892,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         UI.towerPreGameControls.classList.add('hidden');
         UI.towerInGameControls.classList.remove('hidden');
+        UI.towerBetInput.disabled = true;
+
 
         renderTower();
         renderTowerPayouts();
@@ -1045,34 +1057,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
         STATE.coinflipState.isFlipping = true;
         UI.coinflipResult.textContent = '';
-        UI.coin.classList.add('flipping');
         
         const result = Math.random() < 0.5 ? 'heads' : 'tails';
-        
-        setTimeout(() => {
-            if (result === 'heads') {
-                 UI.coin.style.transform = 'rotateY(1800deg)';
-            } else {
-                 UI.coin.style.transform = 'rotateY(1980deg)';
-            }
-        
-            setTimeout(() => {
-                if (playerChoice === result) {
-                    STATE.userBalance += bet;
-                    UI.coinflipResult.textContent = `Вы выиграли ${bet} ⭐!`;
-                    showNotification(`Победа!`);
-                } else {
-                    STATE.userBalance -= bet;
-                    UI.coinflipResult.textContent = `Вы проиграли ${bet} ⭐.`;
-                    showNotification(`Проигрыш!`);
-                }
-                updateBalanceDisplay();
-                STATE.coinflipState.isFlipping = false;
-                 UI.coin.classList.remove('flipping');
-                 UI.coin.style.transform = result === 'tails' ? 'rotateY(180deg)' : 'rotateY(0deg)';
 
-            }, 1200);
-        }, 100);
+        const handleFlipEnd = () => {
+            // Показать результат
+            if (playerChoice === result) {
+                STATE.userBalance += bet;
+                UI.coinflipResult.textContent = `Вы выиграли ${bet} ⭐!`;
+                showNotification(`Победа!`);
+            } else {
+                STATE.userBalance -= bet;
+                UI.coinflipResult.textContent = `Вы проиграли ${bet} ⭐.`;
+                showNotification(`Проигрыш!`);
+            }
+            updateBalanceDisplay();
+            STATE.coinflipState.isFlipping = false;
+
+            // Мгновенно сбросить transform для следующей анимации без видимого перехода
+            UI.coin.style.transition = 'none';
+            if (result === 'tails') {
+                UI.coin.style.transform = 'rotateY(180deg)';
+            } else {
+                UI.coin.style.transform = 'rotateY(0deg)';
+            }
+        };
+
+        UI.coin.addEventListener('transitionend', handleFlipEnd, { once: true });
+
+        // Восстановить transition для анимации вращения
+        UI.coin.style.transition = 'transform 1s cubic-bezier(0.5, 1.3, 0.5, 1.3)';
+        
+        // Начать анимацию
+        if (result === 'heads') {
+             // 5 полных оборотов, заканчивается на той же стороне
+             UI.coin.style.transform = 'rotateY(1800deg)';
+        } else {
+             // 5.5 оборотов, заканчивается на противоположной стороне
+             UI.coin.style.transform = 'rotateY(1980deg)';
+        }
     }
     // --- КОНЕЦ ЛОГИКИ ОРЛА И РЕШКИ ---
 
@@ -1091,6 +1114,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         STATE.rpsState.isPlaying = true;
+        UI.rpsButtons.forEach(button => button.disabled = true); // Disable buttons
+
         const choices = ['rock', 'paper', 'scissors'];
         const computerChoice = choices[Math.floor(Math.random() * choices.length)];
 
@@ -1101,34 +1126,47 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         UI.rpsPlayerChoice.textContent = choiceMap[playerChoice];
-        UI.rpsComputerChoice.textContent = choiceMap[computerChoice];
+        UI.rpsComputerChoice.classList.add('spinning');
         
-        let resultMessage = '';
-        if (playerChoice === computerChoice) {
-            resultMessage = "Ничья!";
-        } else if (
-            (playerChoice === 'rock' && computerChoice === 'scissors') ||
-            (playerChoice === 'paper' && computerChoice === 'rock') ||
-            (playerChoice === 'scissors' && computerChoice === 'paper')
-        ) {
-            resultMessage = `Вы выиграли ${bet} ⭐!`;
-            STATE.userBalance += bet;
-            showNotification(`Победа!`);
-        } else {
-            resultMessage = `Вы проиграли ${bet} ⭐.`;
-            STATE.userBalance -= bet;
-            showNotification(`Проигрыш!`);
-        }
-        
-        UI.rpsResultMessage.textContent = resultMessage;
-        updateBalanceDisplay();
+        let spinInterval = setInterval(() => {
+            const randomChoice = choices[Math.floor(Math.random() * choices.length)];
+            UI.rpsComputerChoice.textContent = choiceMap[randomChoice];
+        }, 100);
+
 
         setTimeout(() => {
-            STATE.rpsState.isPlaying = false;
-            UI.rpsResultMessage.textContent = '';
-            UI.rpsPlayerChoice.textContent = '?';
-            UI.rpsComputerChoice.textContent = '?';
-        }, 2000);
+            clearInterval(spinInterval);
+            UI.rpsComputerChoice.classList.remove('spinning');
+            UI.rpsComputerChoice.textContent = choiceMap[computerChoice];
+            
+            let resultMessage = '';
+            if (playerChoice === computerChoice) {
+                resultMessage = "Ничья!";
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                resultMessage = `Вы выиграли ${bet} ⭐!`;
+                STATE.userBalance += bet;
+                showNotification(`Победа!`);
+            } else {
+                resultMessage = `Вы проиграли ${bet} ⭐.`;
+                STATE.userBalance -= bet;
+                showNotification(`Проигрыш!`);
+            }
+            
+            UI.rpsResultMessage.textContent = resultMessage;
+            updateBalanceDisplay();
+
+            setTimeout(() => {
+                STATE.rpsState.isPlaying = false;
+                UI.rpsResultMessage.textContent = '';
+                UI.rpsPlayerChoice.textContent = '?';
+                UI.rpsComputerChoice.textContent = '?';
+                UI.rpsButtons.forEach(button => button.disabled = false); // Re-enable buttons
+            }, 2000);
+        }, 4500); // Spin for 2 seconds
     }
     // --- КОНЕЦ ЛОГИКИ КАМЕНЬ-НОЖНИЦЫ-БУМАГА ---
 
@@ -1172,8 +1210,8 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.userTicketsDisplay = document.getElementById('user-tickets-display');
 
         // Элементы для Апгрейда
-        UI.upgradeView = document.getElementById('upgrade-view');
         UI.upgradeWheel = document.getElementById('upgrade-wheel');
+        UI.upgradePointer = document.getElementById('upgrade-pointer');
         UI.upgradeChanceDisplay = document.getElementById('upgrade-chance-display');
         UI.upgradeMultiplierDisplay = document.getElementById('upgrade-multiplier-display');
         UI.yourItemSlot = document.getElementById('your-item-slot');
@@ -1192,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.minerBetInput = document.getElementById('miner-bet-input');
         UI.minerNextWin = document.getElementById('miner-next-win');
         UI.minerTotalWin = document.getElementById('miner-total-win');
+        UI.minerInfoWrapper = document.querySelector('.miner-info-wrapper');
         
         // Элементы для Орел и Решка
         UI.coin = document.getElementById('coin');
