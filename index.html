@@ -1,47 +1,22 @@
+<!DOCTYPE html>
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>StarsDrop</title>
-    <title>StarsDrop Premium</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="modal-overlay" class="overlay"></div>
-    <div id="loading-screen" class="loading-screen">
-        <div class="loading-content">
-            <img src="logo.png" alt="StarsDrop" class="loading-logo">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Загрузка...</div>
-        </div>
-    </div>
 
     <div class="mini-app">
     <div id="notification-toast" class="notification-toast"></div>
-        <div id="notification-toast" class="notification-toast"></div>
-        <div id="achievement-toast" class="achievement-toast"></div>
-
         <header class="app-header">
             <img src="logo.png" alt="StarsDrop Logo" class="header-logo">
             <div class="resource header-balance">
                 <span class="icon">⭐</span>
                 <span id="user-balance">1250</span>
-            <div class="header-stats">
-                <div class="resource header-balance">
-                    <span class="icon">⭐</span>
-                    <span id="user-balance">1250</span>
-                </div>
-                <div class="resource header-gems">
-                    <span class="icon">💎</span>
-                    <span id="user-gems">0</span>
-                </div>
-                <div class="resource header-level">
-                    <span class="icon">🏆</span>
-                    <span id="user-level">1</span>
-                </div>
             </div>
         </header>
 
@@ -52,357 +27,319 @@
                     <div class="case-card">
                         <img id="case-image-btn" src="case.png" alt="Gift Case" class="case-main-image">
                         <div class="case-card-title">All in</div>
-                    <div class="case-section">
-                        <div class="case-selector">
-                            <button class="case-type-btn active" data-case="common">Обычный</button>
-                            <button class="case-type-btn" data-case="rare">Редкий</button>
-                            <button class="case-type-btn" data-case="epic">Эпический</button>
-                            <button class="case-type-btn" data-case="legendary">Легендарный</button>
-                        </div>
-                        <div class="case-card">
-                            <img id="case-image-btn" src="case.png" alt="Gift Case" class="case-main-image">
-                            <div class="case-card-title" id="case-title">All in</div>
-                            <div class="case-price" id="case-price">⭐ 100</div>
-                            <div class="case-chance-info">
-                                <div class="chance-item">
-                                    <span class="chance-color common"></span>
-                                    <span>Обычный: 60%</span>
-                                </div>
-                                <div class="chance-item">
-                                    <span class="chance-color rare"></span>
-                                    <span>Редкий: 30%</span>
-                                </div>
-                                <div class="chance-item">
-                                    <span class="chance-color epic"></span>
-                                    <span>Эпический: 9%</span>
-                                </div>
-                                <div class="chance-item">
-                                    <span class="chance-color legendary"></span>
-                                    <span>Легендарный: 1%</span>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div id="spin-view" class="hidden">
                     <h1 class="case-title-main">All in</h1>
-                    <h1 class="case-title-main" id="spin-case-title">All in</h1>
                     <div id="spinner-container" class="spinner-container">
                         <div class="spinner-pointer"></div>
                         <div id="roulette" class="roulette-track"></div>
-@@ -40,13 +89,14 @@ <h1 class="case-title-main">All in</h1>
+                    </div>
+                    <div id="multi-spinner-container" class="multi-spinner-container hidden"></div>
+                </div>
             </div>
 
             <div id="games-menu-view" class="view">
                 <h2 class="view-title">Игры</h2>
-                <h2 class="view-title">Игровой центр</h2>
                 <div class="games-menu-grid">
                     <button class="game-menu-btn" data-view="upgrade-view">
                         <img src="update.png" alt="Апгрейды">
                         <span>Апгрейды</span>
-                        <div class="game-badge">NEW</div>
                     </button>
                      <button class="game-menu-btn" data-view="miner-view">
-                    <button class="game-menu-btn" data-view="miner-view">
                         <img src="miner.png" alt="Минер">
                         <span>Минер</span>
                     </button>
-@@ -66,6 +116,74 @@ <h2 class="view-title">Игры</h2>
+                    <button class="game-menu-btn" data-view="coinflip-view">
+                        <img src="coin.png" alt="Орел и Решка">
+                        <span>Орел и Решка</span>
+                    </button>
+                    <button class="game-menu-btn" data-view="rps-view">
+                        <img src="paper.PNG" alt="Камень ножницы бумага">
+                        <span>Камень ножницы бумага</span>
+                    </button>
+                    <button class="game-menu-btn" data-view="slots-view">
+                        <img src="game.png" alt="Слоты">
+                        <span>Слоты</span>
+                    </button>
+                    <button class="game-menu-btn" data-view="tower-view">
                         <img src="tower.png" alt="Вежа">
                         <span>Вежа</span>
                     </button>
-                    <button class="game-menu-btn" data-view="crash-view">
-                        <img src="coin.png" alt="Краш">
-                        <span>Краш</span>
-                        <div class="game-badge hot">HOT</div>
-                    </button>
-                    <button class="game-menu-btn" data-view="blackjack-view">
-                        <img src="case.png" alt="Блэкджек">
-                        <span>Блэкджек</span>
-                        <div class="game-badge">NEW</div>
-                    </button>
                 </div>
             </div>
 
-            <!-- Новая игра Краш -->
-            <div id="crash-view" class="view">
-                <div class="crash-container">
-                    <h2 class="view-title">Краш</h2>
-                    <div class="crash-graph-container">
-                        <canvas id="crash-graph" class="crash-graph"></canvas>
-                        <div id="crash-multiplier" class="crash-multiplier">1.00x</div>
-                        <div id="crash-status" class="crash-status">Ожидание игры...</div>
-                    </div>
-                    <div class="crash-controls">
+            <div id="tower-view" class="view">
+                <div class="tower-container">
+                    <h2 class="view-title">Вежа</h2>
+                     <div id="tower-pre-game-controls" class="tower-controls">
                         <div class="control-group">
-                            <label for="crash-bet-input">Ставка</label>
-                            <input type="number" id="crash-bet-input" class="miner-input" value="100">
+                            <label for="tower-bet-input">Ставка</label>
+                            <input type="number" id="tower-bet-input" class="miner-input" value="100">
                         </div>
-                        <div class="control-group">
-                            <label for="crash-auto-cashout">Авто-вывод при</label>
-                            <input type="number" id="crash-auto-cashout" class="miner-input" value="2.00" step="0.01">
-                        </div>
-                        <button id="crash-bet-btn" class="primary-button">Сделать ставку</button>
-                        <button id="crash-cashout-btn" class="secondary-button hidden">Вывести</button>
+                        <button id="tower-start-btn" class="primary-button">Начать игру</button>
                     </div>
-                    <div class="crash-history">
-                        <h4>История множителей:</h4>
-                        <div id="crash-history-list" class="crash-history-list"></div>
+                    <div class="tower-main-content">
+                        <div id="tower-payouts" class="tower-payouts"></div>
+                        <div id="tower-grid" class="tower-grid"></div>
+                    </div>
+                    <div id="tower-in-game-controls" class="tower-controls hidden">
+                         <button id="tower-cashout-btn" class="secondary-button">Забрать <span id="tower-cashout-amount">0</span> ⭐</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Новая игра Блэкджек -->
-            <div id="blackjack-view" class="view">
-                <div class="blackjack-container">
-                    <h2 class="view-title">Блэкджек</h2>
-                    <div class="blackjack-table">
-                        <div class="dealer-section">
-                            <h3>Дилер: <span id="dealer-score">0</span></h3>
-                            <div id="dealer-cards" class="cards-container"></div>
+            <div id="slots-view" class="view">
+                <div class="slots-container">
+                    <h2 class="view-title">Слоты</h2>
+                    <div class="slots-machine">
+                        <div class="slots-reels-container">
+                            <div class="slots-reel">
+                                <div class="slots-track" id="slots-track-1"></div>
+                            </div>
+                            <div class="slots-reel">
+                                <div class="slots-track" id="slots-track-2"></div>
+                            </div>
+                            <div class="slots-reel">
+                                <div class="slots-track" id="slots-track-3"></div>
+                            </div>
                         </div>
-                        <div class="player-section">
-                            <h3>Вы: <span id="player-score">0</span></h3>
-                            <div id="player-cards" class="cards-container"></div>
-                        </div>
+                        <div class="slots-payline"></div>
                     </div>
-                    <div class="blackjack-controls">
+                    <div class="slots-controls">
                         <div class="control-group">
-                            <label for="blackjack-bet-input">Ставка</label>
-                            <input type="number" id="blackjack-bet-input" class="miner-input" value="100">
-                        </div>
-                        <div class="game-buttons">
-                            <button id="blackjack-deal-btn" class="primary-button">Раздать</button>
-                            <button id="blackjack-hit-btn" class="secondary-button hidden">Еще</button>
-                            <button id="blackjack-stand-btn" class="secondary-button hidden">Хватит</button>
-                            <button id="blackjack-double-btn" class="secondary-button hidden">Удвоить</button>
-                        </div>
-                    </div>
-                    <div id="blackjack-result" class="game-result"></div>
-                </div>
-            </div>
-
-@@ -112,6 +230,14 @@ <h2 class="view-title">Слоты</h2>
+                            <label for="slots-bet-input">Ставка</label>
                             <input type="number" id="slots-bet-input" class="miner-input" value="100">
                         </div>
                         <button id="slots-spin-btn" class="primary-button">Крутить</button>
-                        <button id="slots-max-bet-btn" class="secondary-button">Макс ставка</button>
-                    </div>
-                    <div class="slots-paytable">
-                        <h4>Таблица выплат:</h4>
-                        <div class="paytable-item">🍋🍋🍋 = x10</div>
-                        <div class="paytable-item">🍒🍒🍒 = x5</div>
-                        <div class="paytable-item">7️⃣7️⃣7️⃣ = x20</div>
-                        <div class="paytable-item">Любые 2 одинаковых = x1.5</div>
                     </div>
                 </div>
             </div>
-@@ -124,6 +250,14 @@ <h2 class="view-title">Минер</h2>
+
+            <div id="miner-view" class="view">
+                <div class="miner-container">
+                    <h2 class="view-title">Минер</h2>
+                    <div class="miner-controls">
+                         <div class="control-group">
                             <label for="miner-bet-input">Ставка</label>
                             <input type="number" id="miner-bet-input" class="miner-input" value="100">
-                        </div>
-                        <div class="control-group">
-                            <label for="miner-bombs-select">Количество бомб</label>
-                            <select id="miner-bombs-select" class="miner-input">
-                                <option value="3">3 бомбы</option>
-                                <option value="6" selected>6 бомб</option>
-                                <option value="9">9 бомб</option>
-                            </select>
                         </div>
                         <button id="miner-start-btn" class="primary-button">Начать игру</button>
                         <button id="miner-cashout-btn" class="secondary-button hidden">Забрать выигрыш</button>
                     </div>
-@@ -154,8 +288,25 @@ <h2 class="view-title">Орел и Решка</h2>
+                    <div id="miner-grid" class="miner-grid"></div>
+                    <div class="miner-info-wrapper hidden">
+                        <div class="miner-info">
+                             <p>Следующий выигрыш:<span id="miner-next-win">0</span></p>
+                             <p>Общий выигрыш:<span id="miner-total-win">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="coinflip-view" class="view">
+                <div class="coinflip-container">
+                    <h2 class="view-title">Орел и Решка</h2>
+                    <div id="coin" class="coin">
+                        <div class="coin-heads">
+                            <img src="orel.png" alt="Орел">
+                        </div>
+                        <div class="coin-tails">
+                            <img src="reska.png" alt="Решка">
+                        </div>
+                    </div>
+                    <div class="coinflip-result-message" id="coinflip-result-message"></div>
+                    <div class="control-group">
+                        <label for="coinflip-bet-input">Ставка:</label>
                         <input type="number" id="coinflip-bet-input" class="miner-input" value="100">
                     </div>
                     <div class="coinflip-choices">
                         <button class="primary-button" id="coinflip-heads-btn">Орел</button>
                         <button class="primary-button" id="coinflip-tails-btn">Решка</button>
-                        <button class="primary-button" id="coinflip-heads-btn">Орел (x1.9)</button>
-                        <button class="primary-button" id="coinflip-tails-btn">Решка (x1.9)</button>
-                    </div>
-                    <div class="coinflip-stats">
-                        <h4>Статистика:</h4>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <span>Всего игр:</span>
-                                <span id="coinflip-total-games">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Побед:</span>
-                                <span id="coinflip-wins">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Процент побед:</span>
-                                <span id="coinflip-win-rate">0%</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
-@@ -173,10 +324,27 @@ <h2 class="view-title">Камень, Ножницы, Бумага</h2>
+            <div id="rps-view" class="view">
+                 <div class="rps-container">
+                     <h2 class="view-title">Камень, Ножницы, Бумага</h2>
+                     <div class="rps-result-message" id="rps-result-message"></div>
+                     <div class="rps-choices">
+                         <div class="rps-choice" id="rps-player-choice">?</div>
+                         <div class="rps-vs">VS</div>
+                         <div class="rps-choice" id="rps-computer-choice">?</div>
+                     </div>
+                     <div class="control-group">
+                         <label for="rps-bet-input">Ставка:</label>
                          <input type="number" id="rps-bet-input" class="miner-input" value="100">
                      </div>
                      <div class="rps-buttons">
                          <button class="primary-button" data-choice="rock">Камень</button>
                          <button class="primary-button" data-choice="paper">Бумага</button>
                          <button class="primary-button" data-choice="scissors">Ножницы</button>
-                         <button class="primary-button" data-choice="rock">🗿 Камень</button>
-                         <button class="primary-button" data-choice="paper">📄 Бумага</button>
-                         <button class="primary-button" data-choice="scissors">✂️ Ножницы</button>
                      </div>
-                     <div class="rps-stats">
-                        <h4>Статистика:</h4>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <span>Всего игр:</span>
-                                <span id="rps-total-games">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Побед:</span>
-                                <span id="rps-wins">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span>Ничьих:</span>
-                                <span id="rps-draws">0</span>
-                            </div>
-                        </div>
-                    </div>
                  </div>
             </div>
 
-@@ -229,6 +397,35 @@ <h2 class="view-title">Апгрейд предмета</h2>
-                </div>
-            </div>
-
-            <!-- Новый раздел Достижения -->
-            <div id="achievements-view" class="view">
-                <div class="achievements-container">
-                    <h2 class="view-title">Достижения</h2>
-                    <div id="achievements-list" class="achievements-list"></div>
-                </div>
-            </div>
-
-            <!-- Новый раздел Ежедневные задания -->
-            <div id="daily-tasks-view" class="view">
-                <div class="daily-tasks-container">
-                    <h2 class="view-title">Ежедневные задания</h2>
-                    <div id="daily-tasks-list" class="daily-tasks-list"></div>
-                </div>
-            </div>
-
-            <!-- Новый раздел Магазин -->
-            <div id="shop-view" class="view">
-                <div class="shop-container">
-                    <h2 class="view-title">Магазин</h2>
-                    <div class="shop-tabs">
-                        <button class="shop-tab-btn active" data-tab="boosters">Бустеры</button>
-                        <button class="shop-tab-btn" data-tab="cosmetics">Облики</button>
-                        <button class="shop-tab-btn" data-tab="premium">Премиум</button>
+            <div id="upgrade-view" class="view">
+                <div class="upgrade-container">
+                    <h2 class="view-title">Апгрейд предмета</h2>
+                    <div class="upgrade-top-panel">
+                        <div class="upgrade-wheel-container">
+                            <div id="upgrade-pointer" class="upgrade-pointer"></div>
+                            <div id="upgrade-wheel" class="upgrade-wheel">
+                                <div class="upgrade-wheel-inner">
+                                    <div id="upgrade-chance-display" class="upgrade-chance-display">0%</div>
+                                    <div id="upgrade-multiplier-display" class="upgrade-multiplier-display">x0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upgrade-slots-container">
+                            <div id="your-item-slot" class="upgrade-slot">
+                                <div class="slot-placeholder">+</div>
+                                <div class="slot-content hidden">
+                                    <img src="" alt="">
+                                    <span></span>
+                                </div>
+                                <div class="slot-label">Ваш предмет</div>
+                            </div>
+                            <div class="upgrade-arrow">→</div>
+                            <div id="desired-item-slot" class="upgrade-slot">
+                                <div class="slot-placeholder">+</div>
+                                <div class="slot-content hidden">
+                                    <img src="" alt="">
+                                    <span></span>
+                                </div>
+                                <div class="slot-label">Желаемый предмет</div>
+                            </div>
+                        </div>
+                        <div id="upgrade-button-container">
+                            <button id="perform-upgrade-btn" class="primary-button" disabled>
+                                <span class="icon">🚀</span> Апгрейд
+                            </button>
+                        </div>
                     </div>
-                    <div id="shop-content" class="shop-content"></div>
+                    <div class="upgrade-picker-container">
+                        <div class="profile-tabs">
+                            <button id="picker-tab-inventory" class="profile-tab-btn active" data-picker="inventory">Инвентарь</button>
+                            <button id="picker-tab-desired" class="profile-tab-btn" data-picker="desired">Все предметы</button>
+                        </div>
+                        <div id="item-picker-content" class="item-picker-content">
+                            </div>
+                    </div>
                 </div>
             </div>
 
             <div id="contests-view" class="view">
                 <div class="contest-card">
                     <div class="contest-header">
-@@ -266,11 +463,33 @@ <h3 class="purchase-section__title">Покупка билетов</h3>
+                        <span class="contest-header__title">Конкурс за билеты</span>
+                        <span class="contest-header__timer" id="contest-timer"></span>
+                    </div>
+
+                    <div class="contest-item">
+                        <img src="item.png" alt="Nail Bracelet" class="contest-item__image">
+                        <div class="contest-item__info">
+                            <div class="contest-item__name">Cigar</div>
+                            <div class="contest-item__meta">
+                                <span>Твои билеты: <b id="user-tickets-display">0</b></span>
+                                <span>👥 18</span>
+                                <a href="#" class="contest-item__link">Последние победители</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="purchase-section">
+                        <h3 class="purchase-section__title">Покупка билетов</h3>
+                        <div class="purchase-controls">
+                            <button class="primary-button" id="buy-ticket-btn">
+                                Купить билет
+                            </button>
+                            <div class="quantity-control">
+                                <button id="ticket-quantity-minus" class="quantity-control__btn">-</button>
+                                <input type="text" id="ticket-quantity-input" class="quantity-control__input" value="1" readonly>
+                                <button id="ticket-quantity-plus" class="quantity-control__btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div id="friends-view" class="view">
                 <div class="friends-invite-section">
                     <h2>Запрошуй друзів - Отримуй Нагороди!</h2>
-                    <h2>Приглашай друзей - Получай награды!</h2>
-                    <div class="referral-stats">
-                        <div class="stat-card">
-                            <div class="stat-number" id="referral-count">0</div>
-                            <div class="stat-label">Рефералов</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="referral-bonus">0</div>
-                            <div class="stat-label">Бонус ⭐</div>
-                        </div>
-                    </div>
                     <div class="friends-buttons">
                         <button id="invite-friend-btn" class="primary-button">Запросити друга</button>
-                        <button id="invite-friend-btn" class="primary-button">Пригласить друга</button>
                         <button id="copy-link-btn" class="secondary-button"><span class="icon">📄</span></button>
-                    </div>
-                    <div class="referral-rewards">
-                        <h3>Награды за рефералов:</h3>
-                        <div class="reward-item">
-                            <span>1 друг = 500 ⭐</span>
-                        </div>
-                        <div class="reward-item">
-                            <span>5 друзей = 3000 ⭐ + 10 💎</span>
-                        </div>
-                        <div class="reward-item">
-                            <span>10 друзей = 10000 ⭐ + 50 💎</span>
-                        </div>
                     </div>
                 </div>
                 <div class="friends-list">
                 </div>
-@@ -282,15 +501,40 @@ <h2>Запрошуй друзів - Отримуй Нагороди!</h2>
+            </div>
+
+            <div id="profile-view" class="view">
+                <div class="profile-header">
+                    <img id="profile-photo" src="" alt="User Photo" class="profile-photo">
                     <div class="profile-info">
                         <h2 id="profile-name" class="profile-name"></h2>
                         <p id="profile-id" class="profile-id"></p>
-                        <div class="profile-level-bar">
-                            <div class="level-info">
-                                <span>Уровень <span id="profile-level">1</span></span>
-                                <span><span id="profile-exp">0</span>/<span id="profile-exp-max">1000</span> XP</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div id="profile-exp-bar" class="progress-fill"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="total-opened">0</div>
-                        <div class="stat-label">Кейсов открыто</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="total-won">0</div>
-                        <div class="stat-label">Всего выиграно</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="biggest-win">0</div>
-                        <div class="stat-label">Крупнейший выигрыш</div>
                     </div>
                 </div>
                 <div class="profile-tabs">
                     <button class="profile-tab-btn active" data-tab="inventory">Інвентар</button>
                     <button class="profile-tab-btn" data-tab="history">Історія</button>
-                    <button class="profile-tab-btn" data-tab="achievements">Достижения</button>
                 </div>
                 <div class="profile-content">
                     <div id="inventory-content" class="profile-tab-content active"></div>
                     <div id="history-content" class="profile-tab-content"></div>
-                    <div id="achievements-content" class="profile-tab-content"></div>
                 </div>
             </div>
         </div>
-@@ -305,6 +549,9 @@ <h2 id="profile-name" class="profile-name"></h2>
+
+        <footer class="bottom-nav">
+             <button class="nav-btn" data-view="contests-view">
+                <div class="nav-icon"><img src="gift.png" alt="Конкурси"></div><div class="nav-label">Конкурси</div>
+            </button>
+            <button class="nav-btn" data-view="games-menu-view">
+                <div class="nav-icon"><img src="game.png" alt="Игры"></div><div class="nav-label">Игры</div>
+            </button>
             <button class="nav-btn active" data-view="game-view">
                 <div class="nav-icon"><img src="case_button.png" alt="Кейси"></div><div class="nav-label">Кейси</div>
-            </button>
-            <button class="nav-btn" data-view="shop-view">
-                <div class="nav-icon"><img src="diamond.png" alt="Магазин"></div><div class="nav-label">Магазин</div>
             </button>
             <button class="nav-btn" data-view="friends-view">
                 <div class="nav-icon"><img src="friend.png" alt="Друзі"></div>
                 <div class="nav-label">Друзі</div>
-                 <h2 id="profile-name" class="profile-name"></h2>
-                <label>Вміст кейсу</label>
-                <div id="case-contents-preview" class="contents-preview"></div>
+            </button>
+            <button class="nav-btn" data-view="profile-view">
+                <div class="nav-icon"><img src="profile.png" alt="Профіль"></div><div class="nav-label">Профіль</div>
+            </button>
+        </footer>
+    </div>
+
+    <div id="pre-open-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" data-close-modal="pre-open-modal">✖</button>
+            <img src="case.png" alt="Gift Case" class="modal-case-image">
+            <div id="price-check-message" class="price-message">⭐ 100</div>
+            <div class="options-group">
+                <label>Скільки кейсів відкрити?</label>
+                <div id="quantity-selector" class="quantity-selector">
+                    <button class="quantity-btn active">1</button>
+                    <button class="quantity-btn">2</button>
+                    <button class="quantity-btn">3</button>
+                    <button class="quantity-btn">4</button>
+                    <button class="quantity-btn">5</button>
+                </div>
             </div>
             <div class="options-group">
-                <label>
-                    <input type="checkbox" id="fast-open-checkbox"> Быстрое открытие
-                </label>
+                <label>Вміст кейсу</label>
+                <div id="case-contents-preview" class="contents-preview"></div>
             </div>
             <button id="start-spin-btn" class="primary-button">Відкрити</button>
         </div>
     </div>
+    
+    <div id="result-modal" class="modal"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
