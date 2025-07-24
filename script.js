@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         rpsState: {
             isPlaying: false,
+            choices: ['rock', 'paper', 'scissors'],
+            choiceMap: { rock: '✊', paper: '✋', scissors: '✌️' }
         },
         slotsState: {
             isSpinning: false,
@@ -53,9 +55,11 @@ document.addEventListener('DOMContentLoaded', function() {
         towerState: {
             isActive: false,
             bet: 100,
-            currentLevel: 0,
-            grid: [], // 0 for left bomb, 1 for right bomb
-            payouts: []
+            currentLevel: 0, // 0-4 for 5 levels
+            levels: 5,
+            grid: [], // Array of bomb positions (0 for left, 1 for right)
+            payouts: [],
+            multipliers: [1.8, 2.5, 4, 8, 16] // Example multipliers
         }
     };
 
@@ -616,6 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
         STATE.minerState.isActive = false;
         STATE.minerState.openedCrystals = 0;
         STATE.minerState.totalWin = 0;
+        STATE.minerState.grid = [];
         renderMinerGrid();
         updateMinerUI();
         if (UI.minerBetInput) UI.minerBetInput.disabled = false;
@@ -762,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // --- КОНЕЦ ЛОГИКИ МИНЕРА ---
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА СЛОТОВ ---
+    // --- ЛОГИКА СЛОТОВ ---
     function handleSlotsSpin() {
         if (STATE.slotsState.isSpinning) return;
 
@@ -812,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const itemHeight = 90; // 80px height + 10px margin
             const targetPosition = (reelLength - 2) * itemHeight;
-            const spinDuration = 2 + index * 0.5;
+            const spinDuration = 1.2 + index * 0.3;
             
             track.style.transition = `top ${spinDuration}s cubic-bezier(0.25, 1, 0.5, 1)`;
             track.style.top = `-${targetPosition}px`;
@@ -853,19 +858,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // --- КОНЕЦ ЛОГИКИ СЛОТОВ ---
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА ВЕЖИ (TOWER) ---
+    // --- ЛОГИКА ВЕЖИ (TOWER) (ИЗМЕНЕНО) ---
     function resetTowerGame() {
         STATE.towerState.isActive = false;
         STATE.towerState.currentLevel = 0;
-        STATE.towerState.grid = [];
-        STATE.towerState.payouts = [];
-
-        UI.towerPreGameControls.classList.remove('hidden');
-        UI.towerInGameControls.classList.add('hidden');
-        if (UI.towerBetInput) UI.towerBetInput.disabled = false;
-
-        renderTower();
-        renderTowerPayouts();
+        
+        renderTower(); // Render the initial empty state
+        
+        UI.towerBetControl.classList.remove('hidden');
+        UI.towerBetInput.disabled = false;
+        
+        UI.towerActionBtn.textContent = 'Начать игру';
+        UI.towerActionBtn.classList.remove('cashout');
+        UI.towerActionBtn.disabled = false;
+        
+        // Ensure listener is for starting the game
+        UI.towerActionBtn.replaceWith(UI.towerActionBtn.cloneNode(true));
+        UI.towerActionBtn = document.getElementById('tower-action-btn'); // Re-select the cloned button
+        UI.towerActionBtn.addEventListener('click', startTowerGame);
     }
 
     function startTowerGame() {
@@ -885,158 +895,122 @@ document.addEventListener('DOMContentLoaded', function() {
         STATE.towerState.isActive = true;
         STATE.towerState.bet = bet;
         STATE.towerState.currentLevel = 0;
-        STATE.towerState.grid = Array.from({ length: 5 }, () => Math.floor(Math.random() * 2));
-
-        const multipliers = [2, 4, 8, 16, 32];
-        STATE.towerState.payouts = multipliers.map(m => bet * m);
+        STATE.towerState.grid = Array.from({ length: STATE.towerState.levels }, () => Math.floor(Math.random() * 2));
+        STATE.towerState.payouts = STATE.towerState.multipliers.map(m => bet * m);
         
-        UI.towerPreGameControls.classList.add('hidden');
-        UI.towerInGameControls.classList.remove('hidden');
+        UI.towerBetControl.classList.add('hidden');
         UI.towerBetInput.disabled = true;
 
+        // Set button to cashout mode, but disabled until first win
+        UI.towerActionBtn.textContent = 'Забрать';
+        UI.towerActionBtn.classList.add('cashout');
+        UI.towerActionBtn.disabled = true;
+        UI.towerActionBtn.replaceWith(UI.towerActionBtn.cloneNode(true));
+        UI.towerActionBtn = document.getElementById('tower-action-btn');
+        UI.towerActionBtn.addEventListener('click', cashoutTower);
 
         renderTower();
-        renderTowerPayouts();
-        updateTowerCashoutButton();
     }
 
     function renderTower() {
-        UI.towerGrid.innerHTML = '';
-        const pastRows = document.createDocumentFragment();
-        
-        for (let i = 0; i < 5; i++) {
+        UI.towerGameBoard.innerHTML = '';
+        for (let i = 0; i < STATE.towerState.levels; i++) {
             const rowEl = document.createElement('div');
             rowEl.classList.add('tower-row');
-
-            if (STATE.towerState.isActive && i < STATE.towerState.currentLevel) {
-                rowEl.classList.add('passed');
-            }
 
             if (STATE.towerState.isActive && i === STATE.towerState.currentLevel) {
                 rowEl.classList.add('active');
             }
 
-            for (let j = 0; j < 2; j++) {
-                const cellEl = document.createElement('div');
-                cellEl.classList.add('tower-cell');
-                
-                if (STATE.towerState.isActive && i === STATE.towerState.currentLevel) {
-                     cellEl.addEventListener('click', () => handleTowerCellClick(i, j));
-                }
-
-                if (STATE.towerState.isActive && i < STATE.towerState.currentLevel) {
-                    const bombCol = STATE.towerState.grid[i];
-                    if (j !== bombCol) {
-                        cellEl.classList.add('safe');
-                        cellEl.innerHTML = `<img src="diamond.png">`;
-                    }
-                }
-               
-                rowEl.appendChild(cellEl);
-            }
-            pastRows.appendChild(rowEl);
-        }
-        UI.towerGrid.appendChild(pastRows);
-    }
-
-    function renderTowerPayouts() {
-        UI.towerPayouts.innerHTML = '';
-        const payouts = STATE.towerState.payouts;
-        for (let i = 0; i < 5; i++) {
-            const payoutEl = document.createElement('div');
-            payoutEl.classList.add('tower-payout-item');
+            // Payout display
+            const payout = STATE.towerState.payouts[i] || 0;
+            rowEl.innerHTML = `
+                <span class="tower-payout-display left">+${payout.toFixed(0)}</span>
+                <div class="tower-cell" data-col="0"></div>
+                <div class="tower-cell" data-col="1"></div>
+                <span class="tower-payout-display right">+${payout.toFixed(0)}</span>
+            `;
+            
+            const cells = rowEl.querySelectorAll('.tower-cell');
             if (STATE.towerState.isActive && i === STATE.towerState.currentLevel) {
-                payoutEl.classList.add('active');
+                 cells.forEach(cell => cell.addEventListener('click', () => handleTowerCellClick(i, parseInt(cell.dataset.col))));
             }
-            payoutEl.textContent = `${(payouts[i] || 0).toFixed(0)} ⭐`;
-            UI.towerPayouts.appendChild(payoutEl);
+            
+            // Show revealed cells from previous levels
+            if (i < STATE.towerState.currentLevel) {
+                 const bombCol = STATE.towerState.grid[i];
+                 cells.forEach((cell, col) => {
+                     if(col !== bombCol) {
+                        cell.classList.add('safe');
+                     }
+                 });
+            }
+
+            UI.towerGameBoard.appendChild(rowEl);
         }
     }
 
     function handleTowerCellClick(row, col) {
         if (!STATE.towerState.isActive || row !== STATE.towerState.currentLevel) return;
 
-        STATE.towerState.isActive = false;
-
         const bombCol = STATE.towerState.grid[row];
-        const safeCol = bombCol === 0 ? 1 : 0;
-        const rows = UI.towerGrid.children;
-        const clickedRow = rows[row];
+        const clickedRowEl = UI.towerGameBoard.children[row];
+        const cells = clickedRowEl.querySelectorAll('.tower-cell');
+
+        // Show both bomb and safe on the clicked row
+        cells.forEach((c, c_index) => {
+            c.classList.add(c_index === bombCol ? 'danger' : 'safe');
+        });
+        clickedRowEl.classList.remove('active');
         
-        clickedRow.classList.remove('active');
-        
-        clickedRow.children[bombCol].classList.add('danger');
-        clickedRow.children[bombCol].innerHTML = `<img src="bomb.png">`;
-        clickedRow.children[safeCol].classList.add('safe');
-        clickedRow.children[safeCol].innerHTML = `<img src="diamond.png">`;
+        STATE.towerState.isActive = false; // Pause game during animation/reveal
 
         if (col === bombCol) {
-            setTimeout(() => endTowerGame(false), 500);
+            setTimeout(() => endTowerGame(false), 1000); // Lose
         } else {
             STATE.towerState.currentLevel++;
-            
-            if (STATE.towerState.currentLevel === 5) {
-                setTimeout(() => endTowerGame(true), 500);
+            if (STATE.towerState.currentLevel === STATE.towerState.levels) {
+                setTimeout(() => endTowerGame(true), 1000); // Win max
             } else {
+                // Continue to next level
                 setTimeout(() => {
                     STATE.towerState.isActive = true;
                     renderTower();
-                    renderTowerPayouts();
-                    updateTowerCashoutButton();
+                    // Update and enable cashout button
+                    const cashoutAmount = STATE.towerState.payouts[STATE.towerState.currentLevel - 1];
+                    UI.towerActionBtn.textContent = `Забрать ${cashoutAmount.toFixed(0)} ⭐`;
+                    UI.towerActionBtn.disabled = false;
                 }, 800);
             }
         }
     }
-
-    function updateTowerCashoutButton() {
-        const level = STATE.towerState.currentLevel;
-        if (level > 0) {
-            const amount = STATE.towerState.payouts[level - 1];
-            UI.towerCashoutAmount.textContent = amount.toFixed(0);
-            UI.towerCashoutBtn.disabled = false;
-        } else {
-             UI.towerCashoutAmount.textContent = '0';
-             UI.towerCashoutBtn.disabled = true;
-        }
-    }
     
     function cashoutTower() {
-        if (!STATE.towerState.isActive || STATE.towerState.currentLevel === 0) return;
+        if (STATE.towerState.currentLevel === 0) return;
         endTowerGame(true);
     }
 
     function endTowerGame(isWin) {
-        if (STATE.towerState.isActive === false && !isWin) {
-             // Already lost, do nothing
-        } else {
-            STATE.towerState.isActive = false;
-        }
-        
+        STATE.towerState.isActive = false;
         let winAmount = 0;
-        if (isWin) {
-            const level = STATE.towerState.currentLevel;
-            if (level > 0) {
-                 winAmount = STATE.towerState.payouts[level - 1];
-                 STATE.userBalance += winAmount;
-                 updateBalanceDisplay();
-                 showNotification(`Выигрыш ${winAmount.toFixed(0)} ⭐ зачислен!`);
-            }
+        
+        if (isWin && STATE.towerState.currentLevel > 0) {
+            winAmount = STATE.towerState.payouts[STATE.towerState.currentLevel - 1];
+            STATE.userBalance += winAmount;
+            updateBalanceDisplay();
+            showNotification(`Выигрыш ${winAmount.toFixed(0)} ⭐ зачислен!`);
         } else {
             showNotification("Вы проиграли! Ставка сгорела.");
-        }
-
-        const rows = UI.towerGrid.children;
-        for(let i = STATE.towerState.currentLevel; i < STATE.towerState.grid.length; i++) {
-            if (rows[i]) {
-                const bombCol = STATE.towerState.grid[i];
-                const cell = rows[i].children[bombCol];
-                if(cell) {
-                   cell.classList.add('danger');
-                   cell.innerHTML = `<img src="bomb.png">`;
+            // Reveal all remaining bombs
+            for(let i = STATE.towerState.currentLevel; i < STATE.towerState.levels; i++) {
+                const rowEl = UI.towerGameBoard.children[i];
+                if(rowEl) {
+                    const bombCell = rowEl.querySelector(`.tower-cell[data-col="${STATE.towerState.grid[i]}"]`);
+                    if(bombCell) bombCell.classList.add('danger');
                 }
             }
         }
-
+        
         setTimeout(resetTowerGame, 2000);
     }
     // --- КОНЕЦ ЛОГИКИ ВЕЖИ ---
@@ -1089,17 +1063,20 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.coin.style.transition = 'transform 1s cubic-bezier(0.5, 1.3, 0.5, 1.3)';
         
         // Начать анимацию
+        const currentRotation = UI.coin.style.transform;
+        const isTailsUp = currentRotation.includes('180');
+        const baseRotation = isTailsUp ? 180 : 0;
+        const fullSpins = 5 * 360;
+
         if (result === 'heads') {
-             // 5 полных оборотов, заканчивается на той же стороне
-             UI.coin.style.transform = 'rotateY(1800deg)';
+             UI.coin.style.transform = `rotateY(${baseRotation + fullSpins}deg)`;
         } else {
-             // 5.5 оборотов, заканчивается на противоположной стороне
-             UI.coin.style.transform = 'rotateY(1980deg)';
+             UI.coin.style.transform = `rotateY(${baseRotation + fullSpins + 180}deg)`;
         }
     }
     // --- КОНЕЦ ЛОГИКИ ОРЛА И РЕШКИ ---
 
-    // --- ЛОГИКА КАМЕНЬ-НОЖНИЦЫ-БУМАГА ---
+    // --- ЛОГИКА КАМЕНЬ-НОЖНИЦЫ-БУМАГА (ИЗМЕНЕНО) ---
     function handleRps(playerChoice) {
         if (STATE.rpsState.isPlaying) return;
         
@@ -1114,31 +1091,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         STATE.rpsState.isPlaying = true;
-        UI.rpsButtons.forEach(button => button.disabled = true); // Disable buttons
-
-        const choices = ['rock', 'paper', 'scissors'];
-        const computerChoice = choices[Math.floor(Math.random() * choices.length)];
-
-        const choiceMap = {
-            rock: '✊',
-            paper: '✋',
-            scissors: '✌️'
-        };
-
-        UI.rpsPlayerChoice.textContent = choiceMap[playerChoice];
-        UI.rpsComputerChoice.classList.add('spinning');
+        UI.rpsButtons.forEach(button => button.disabled = true);
+        UI.rpsPlayerChoice.textContent = STATE.rpsState.choiceMap[playerChoice];
+        UI.rpsResultMessage.textContent = '';
         
-        let spinInterval = setInterval(() => {
-            const randomChoice = choices[Math.floor(Math.random() * choices.length)];
-            UI.rpsComputerChoice.textContent = choiceMap[randomChoice];
-        }, 100);
+        const computerChoice = STATE.rpsState.choices[Math.floor(Math.random() * STATE.rpsState.choices.length)];
 
+        // Подготовка ленты
+        const reelLength = 60, winnerIndex = 50;
+        const reel = Array.from({ length: reelLength }, (_, i) => {
+             const symbolKey = i === winnerIndex ? computerChoice : STATE.rpsState.choices[Math.floor(Math.random() * STATE.rpsState.choices.length)];
+             return STATE.rpsState.choiceMap[symbolKey];
+        });
 
-        setTimeout(() => {
-            clearInterval(spinInterval);
-            UI.rpsComputerChoice.classList.remove('spinning');
-            UI.rpsComputerChoice.textContent = choiceMap[computerChoice];
-            
+        UI.rpsComputerChoice.innerHTML = ''; // Очистка предыдущей ленты
+        reel.forEach(symbol => {
+            const itemEl = document.createElement('div');
+            itemEl.classList.add('rps-roulette-item');
+            itemEl.textContent = symbol;
+            UI.rpsComputerChoice.appendChild(itemEl);
+        });
+        
+        // Расчет позиции для анимации
+        const itemWidth = 120, itemMargin = 5, totalItemWidth = itemWidth + (itemMargin * 2);
+        const targetPosition = (winnerIndex * totalItemWidth) + (totalItemWidth / 2);
+
+        const onSpinEnd = () => {
             let resultMessage = '';
             if (playerChoice === computerChoice) {
                 resultMessage = "Ничья!";
@@ -1161,12 +1139,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             setTimeout(() => {
                 STATE.rpsState.isPlaying = false;
-                UI.rpsResultMessage.textContent = '';
-                UI.rpsPlayerChoice.textContent = '?';
-                UI.rpsComputerChoice.textContent = '?';
-                UI.rpsButtons.forEach(button => button.disabled = false); // Re-enable buttons
-            }, 2000);
-        }, 4500); // Spin for 2 seconds
+                UI.rpsButtons.forEach(button => button.disabled = false);
+            }, 1500);
+        };
+        
+        UI.rpsComputerChoice.addEventListener('transitionend', onSpinEnd, { once: true });
+
+        // Запуск анимации
+        UI.rpsComputerChoice.style.transition = 'none';
+        UI.rpsComputerChoice.style.left = '0px';
+        UI.rpsComputerChoice.getBoundingClientRect(); // Force reflow
+        UI.rpsComputerChoice.style.transition = 'left 6s cubic-bezier(0.2, 0.8, 0.2, 1)';
+        UI.rpsComputerChoice.style.left = `calc(50% - ${targetPosition}px)`;
     }
     // --- КОНЕЦ ЛОГИКИ КАМЕНЬ-НОЖНИЦЫ-БУМАГА ---
 
@@ -1254,15 +1238,11 @@ document.addEventListener('DOMContentLoaded', function() {
         UI.slotsBetInput = document.getElementById('slots-bet-input');
         UI.slotsPayline = document.querySelector('.slots-payline');
 
-        // Элементы для Вежи
-        UI.towerGrid = document.getElementById('tower-grid');
-        UI.towerPayouts = document.getElementById('tower-payouts');
+        // Элементы для Вежи (ИЗМЕНЕНО)
+        UI.towerGameBoard = document.getElementById('tower-game-board');
         UI.towerBetInput = document.getElementById('tower-bet-input');
-        UI.towerStartBtn = document.getElementById('tower-start-btn');
-        UI.towerCashoutBtn = document.getElementById('tower-cashout-btn');
-        UI.towerCashoutAmount = document.getElementById('tower-cashout-amount');
-        UI.towerPreGameControls = document.getElementById('tower-pre-game-controls');
-        UI.towerInGameControls = document.getElementById('tower-in-game-controls');
+        UI.towerActionBtn = document.getElementById('tower-action-btn');
+        UI.towerBetControl = document.getElementById('tower-bet-control');
 
         if (!UI.caseImageBtn) throw new Error('Не вдалося знайти картинку кейса з id="case-image-btn"');
 
@@ -1331,9 +1311,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // --- ОБРАБОТЧИКИ ДЛЯ СЛОТОВ ---
         if (UI.slotsSpinBtn) UI.slotsSpinBtn.addEventListener('click', handleSlotsSpin);
 
-        // --- ОБРАБОТЧИКИ ДЛЯ ВЕЖИ ---
-        if (UI.towerStartBtn) UI.towerStartBtn.addEventListener('click', startTowerGame);
-        if (UI.towerCashoutBtn) UI.towerCashoutBtn.addEventListener('click', cashoutTower);
+        // --- ОБРАБОТЧИКИ ДЛЯ ВЕЖИ (ИЗМЕНЕНО) ---
+        if (UI.towerActionBtn) UI.towerActionBtn.addEventListener('click', startTowerGame);
 
         // --- ОБРАБОТЧИКИ ДЛЯ ОРЛА И РЕШКИ ---
         if (UI.coinflipHeadsBtn) UI.coinflipHeadsBtn.addEventListener('click', () => handleCoinflip('heads'));

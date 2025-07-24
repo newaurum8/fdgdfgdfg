@@ -72,19 +72,14 @@
             <div id="tower-view" class="view">
                 <div class="tower-container">
                     <h2 class="view-title">Вежа</h2>
-                     <div id="tower-pre-game-controls" class="tower-controls">
-                        <div class="control-group">
+                    <div id="tower-game-board" class="tower-game-board">
+                        </div>
+                    <div class="tower-controls">
+                         <div class="control-group" id="tower-bet-control">
                             <label for="tower-bet-input">Ставка</label>
                             <input type="number" id="tower-bet-input" class="miner-input" value="100">
                         </div>
-                        <button id="tower-start-btn" class="primary-button">Начать игру</button>
-                    </div>
-                    <div class="tower-main-content">
-                        <div id="tower-payouts" class="tower-payouts"></div>
-                        <div id="tower-grid" class="tower-grid"></div>
-                    </div>
-                    <div id="tower-in-game-controls" class="tower-controls hidden">
-                         <button id="tower-cashout-btn" class="secondary-button">Забрать <span id="tower-cashout-amount">0</span> ⭐</button>
+                        <button id="tower-action-btn" class="primary-button">Начать игру</button>
                     </div>
                 </div>
             </div>
@@ -127,13 +122,13 @@
                         <button id="miner-start-btn" class="primary-button">Начать игру</button>
                         <button id="miner-cashout-btn" class="secondary-button hidden">Забрать выигрыш</button>
                     </div>
-                    <div id="miner-grid" class="miner-grid"></div>
                     <div class="miner-info-wrapper hidden">
                         <div class="miner-info">
                              <p>Следующий выигрыш:<span id="miner-next-win">0</span></p>
                              <p>Общий выигрыш:<span id="miner-total-win">0</span></p>
                         </div>
                     </div>
+                    <div id="miner-grid" class="miner-grid"></div>
                 </div>
             </div>
 
@@ -166,7 +161,10 @@
                      <div class="rps-choices">
                          <div class="rps-choice" id="rps-player-choice">?</div>
                          <div class="rps-vs">VS</div>
-                         <div class="rps-choice" id="rps-computer-choice">?</div>
+                         <div class="rps-spinner-container">
+                            <div class="rps-spinner-pointer"></div>
+                            <div id="rps-computer-choice" class="rps-roulette-track"></div>
+                        </div>
                      </div>
                      <div class="control-group">
                          <label for="rps-bet-input">Ставка:</label>
