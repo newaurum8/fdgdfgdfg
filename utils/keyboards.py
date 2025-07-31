@@ -210,3 +210,198 @@ class Keyboards:
         keyboard.append([InlineKeyboardButton("⬅️ Назад", callback_data="back_step")])
         
         return InlineKeyboardMarkup(keyboard)
+
+    @staticmethod
+    def admin_main_panel() -> InlineKeyboardMarkup:
+        """Admin main panel keyboard"""
+        keyboard = [
+            [InlineKeyboardButton("📊 Статистика", callback_data="admin_stats")],
+            [InlineKeyboardButton("👥 Управление пользователями", callback_data="admin_users")],
+            [InlineKeyboardButton("🤝 Управление сделками", callback_data="admin_transactions")],
+            [InlineKeyboardButton("📢 Рассылка", callback_data="admin_broadcast")],
+            [InlineKeyboardButton("⚙️ Настройки", callback_data="admin_settings")],
+            [InlineKeyboardButton("📈 Отчёты", callback_data="admin_reports")]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_users_menu() -> InlineKeyboardMarkup:
+        """Admin users management menu"""
+        keyboard = [
+            [InlineKeyboardButton("🔍 Найти пользователя", callback_data="admin_find_user")],
+            [InlineKeyboardButton("🚫 Заблокированные", callback_data="admin_users_banned")],
+            [InlineKeyboardButton("⚠️ Подозрительные", callback_data="admin_users_suspicious")],
+            [InlineKeyboardButton("✅ Активные", callback_data="admin_users_active")],
+            [InlineKeyboardButton("🏆 Топ продавцы", callback_data="admin_users_top")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_back_main")]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_transactions_menu() -> InlineKeyboardMarkup:
+        """Admin transactions management menu"""
+        keyboard = [
+            [InlineKeyboardButton("⏳ Ожидающие проверки", callback_data="admin_trans_pending")],
+            [InlineKeyboardButton("💰 Ожидающие оплаты", callback_data="admin_trans_payment")],
+            [InlineKeyboardButton("✅ Завершённые", callback_data="admin_trans_completed")],
+            [InlineKeyboardButton("❌ Отменённые", callback_data="admin_trans_cancelled")],
+            [InlineKeyboardButton("🔍 Найти сделку", callback_data="admin_find_transaction")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_back_main")]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_stats_menu() -> InlineKeyboardMarkup:
+        """Admin statistics menu"""
+        keyboard = [
+            [InlineKeyboardButton("📅 Сегодня", callback_data="admin_stats_today")],
+            [InlineKeyboardButton("📊 Неделя", callback_data="admin_stats_week")],
+            [InlineKeyboardButton("📈 Месяц", callback_data="admin_stats_month")],
+            [InlineKeyboardButton("🎯 Общая статистика", callback_data="admin_stats_all")],
+            [InlineKeyboardButton("💰 Доходы", callback_data="admin_stats_revenue")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_back_main")]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_broadcast_menu() -> InlineKeyboardMarkup:
+        """Admin broadcast menu"""
+        keyboard = [
+            [InlineKeyboardButton("📢 Всем пользователям", callback_data="admin_broadcast_all")],
+            [InlineKeyboardButton("✅ Активным пользователям", callback_data="admin_broadcast_active")],
+            [InlineKeyboardButton("🏆 Топ продавцам", callback_data="admin_broadcast_sellers")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_back_main")]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_settings_menu() -> InlineKeyboardMarkup:
+        """Admin settings menu"""
+        keyboard = [
+            [InlineKeyboardButton("💰 Цены", callback_data="admin_settings_prices")],
+            [InlineKeyboardButton("⏰ Временные лимиты", callback_data="admin_settings_timers")],
+            [InlineKeyboardButton("🛡️ Антиспам", callback_data="admin_settings_antispam")],
+            [InlineKeyboardButton("📊 Файлы", callback_data="admin_settings_files")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_back_main")]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_reports_menu() -> InlineKeyboardMarkup:
+        """Admin reports menu"""
+        keyboard = [
+            [InlineKeyboardButton("📄 Дневной отчёт", callback_data="admin_report_daily")],
+            [InlineKeyboardButton("📊 Недельный отчёт", callback_data="admin_report_weekly")],
+            [InlineKeyboardButton("📈 Месячный отчёт", callback_data="admin_report_monthly")],
+            [InlineKeyboardButton("📧 Настройка рассылки отчётов", callback_data="admin_report_settings")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_back_main")]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_user_management(user_id: int, current_status: str) -> InlineKeyboardMarkup:
+        """Enhanced admin user management keyboard"""
+        keyboard = []
+        
+        # Status management buttons based on current status
+        if current_status == "banned":
+            keyboard.append([InlineKeyboardButton("✅ Разблокировать", callback_data=f"admin_unban_{user_id}")])
+        else:
+            keyboard.append([InlineKeyboardButton("🚫 Заблокировать", callback_data=f"admin_ban_{user_id}")])
+        
+        if current_status != "suspicious":
+            keyboard.append([InlineKeyboardButton("⚠️ Пометить подозрительным", callback_data=f"admin_suspicious_{user_id}")])
+        else:
+            keyboard.append([InlineKeyboardButton("✅ Убрать пометку", callback_data=f"admin_unsuspicious_{user_id}")])
+        
+        # Additional actions
+        keyboard.extend([
+            [InlineKeyboardButton("📊 Детальная статистика", callback_data=f"admin_user_stats_{user_id}")],
+            [InlineKeyboardButton("💬 Отправить сообщение", callback_data=f"admin_message_{user_id}")],
+            [InlineKeyboardButton("📝 Посты пользователя", callback_data=f"admin_user_posts_{user_id}")],
+            [InlineKeyboardButton("🤝 Сделки пользователя", callback_data=f"admin_user_transactions_{user_id}")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_users")]
+        ])
+        
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_transaction_management(transaction_id: int, status: str) -> InlineKeyboardMarkup:
+        """Enhanced admin transaction management keyboard"""
+        keyboard = []
+        
+        if status == "verification_pending":
+            keyboard.extend([
+                [InlineKeyboardButton("✅ Подтвердить проверку", callback_data=f"admin_verify_approve_{transaction_id}")],
+                [InlineKeyboardButton("❌ Отклонить проверку", callback_data=f"admin_verify_reject_{transaction_id}")]
+            ])
+        elif status == "completed":
+            keyboard.extend([
+                [InlineKeyboardButton("💰 Подтвердить и выплатить", callback_data=f"admin_payout_{transaction_id}")],
+                [InlineKeyboardButton("❌ Отменить сделку", callback_data=f"admin_cancel_{transaction_id}")]
+            ])
+        elif status == "in_progress":
+            keyboard.extend([
+                [InlineKeyboardButton("⏰ Продлить время", callback_data=f"admin_extend_time_{transaction_id}")],
+                [InlineKeyboardButton("🆘 Вмешаться в сделку", callback_data=f"admin_intervene_{transaction_id}")]
+            ])
+        
+        # Common actions
+        keyboard.extend([
+            [InlineKeyboardButton("📊 Детали сделки", callback_data=f"admin_transaction_details_{transaction_id}")],
+            [InlineKeyboardButton("💬 Связаться с участниками", callback_data=f"admin_contact_parties_{transaction_id}")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data="admin_transactions")]
+        ])
+        
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_pagination(data_type: str, page: int, total_pages: int) -> InlineKeyboardMarkup:
+        """Admin pagination keyboard"""
+        keyboard = []
+        
+        # Navigation buttons
+        nav_row = []
+        if page > 0:
+            nav_row.append(InlineKeyboardButton("⬅️ Пред", callback_data=f"admin_page_{data_type}_{page-1}"))
+        
+        nav_row.append(InlineKeyboardButton(f"{page + 1}/{total_pages}", callback_data="admin_page_info"))
+        
+        if page < total_pages - 1:
+            nav_row.append(InlineKeyboardButton("След ➡️", callback_data=f"admin_page_{data_type}_{page+1}"))
+        
+        keyboard.append(nav_row)
+        
+        # Back button
+        keyboard.append([InlineKeyboardButton("⬅️ Назад", callback_data=f"admin_{data_type}")])
+        
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_confirmation(action: str, target_id: int = None) -> InlineKeyboardMarkup:
+        """Admin confirmation keyboard"""
+        confirm_data = f"admin_confirm_{action}"
+        cancel_data = f"admin_cancel_{action}"
+        
+        if target_id:
+            confirm_data += f"_{target_id}"
+            cancel_data += f"_{target_id}"
+        
+        keyboard = [
+            [InlineKeyboardButton("✅ Подтвердить", callback_data=confirm_data)],
+            [InlineKeyboardButton("❌ Отменить", callback_data=cancel_data)]
+        ]
+        return InlineKeyboardMarkup(keyboard)
+    
+    @staticmethod
+    def admin_time_extend_options(transaction_id: int) -> InlineKeyboardMarkup:
+        """Time extension options for transactions"""
+        keyboard = [
+            [InlineKeyboardButton("⏰ +1 час", callback_data=f"admin_extend_1h_{transaction_id}")],
+            [InlineKeyboardButton("⏰ +3 часа", callback_data=f"admin_extend_3h_{transaction_id}")],
+            [InlineKeyboardButton("⏰ +6 часов", callback_data=f"admin_extend_6h_{transaction_id}")],
+            [InlineKeyboardButton("⏰ +12 часов", callback_data=f"admin_extend_12h_{transaction_id}")],
+            [InlineKeyboardButton("⏰ +24 часа", callback_data=f"admin_extend_24h_{transaction_id}")],
+            [InlineKeyboardButton("⬅️ Назад", callback_data=f"admin_transaction_details_{transaction_id}")]
+        ]
+        return InlineKeyboardMarkup(keyboard)

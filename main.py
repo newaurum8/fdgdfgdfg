@@ -33,7 +33,9 @@ from handlers.escrow_system import EscrowHandler, (
     PRICE_CONFIRMATION, COMMISSION_SELECTION, PAYMENT_DETAILS,
     PAYMENT_PROCESSING, VERIFICATION_VIDEO, TRANSACTION_PROGRESS, RATING_REVIEW
 )
-from handlers.admin_panel import AdminPanelHandler
+from handlers.admin_panel import AdminPanelHandler, (
+    ADMIN_FIND_USER, ADMIN_BROADCAST_MESSAGE, ADMIN_MESSAGE_USER, ADMIN_FIND_TRANSACTION
+)
 
 # Set up logging
 logging.basicConfig(
@@ -70,6 +72,29 @@ class GamingMarketplaceBot:
     
     def _add_handlers(self):
         """Add all bot handlers"""
+        
+        # Admin conversation handler
+        admin_conv = ConversationHandler(
+            entry_points=[CallbackQueryHandler(
+                AdminPanelHandler.handle_admin_callback,
+                pattern=r'^admin_'
+            )],
+            states={
+                ADMIN_FIND_USER: [MessageHandler(
+                    filters.TEXT & ~filters.COMMAND, AdminPanelHandler.handle_user_search
+                )],
+                ADMIN_BROADCAST_MESSAGE: [MessageHandler(
+                    filters.TEXT & ~filters.COMMAND, AdminPanelHandler.handle_broadcast_message
+                )],
+                ADMIN_MESSAGE_USER: [MessageHandler(
+                    filters.TEXT & ~filters.COMMAND, AdminPanelHandler.handle_user_message
+                )],
+                ADMIN_FIND_TRANSACTION: [MessageHandler(
+                    filters.TEXT & ~filters.COMMAND, AdminPanelHandler.handle_transaction_search
+                )]
+            },
+            fallbacks=[CommandHandler('cancel', AdminPanelHandler.cancel_admin_action)]
+        )
         
         # Announcement conversation handler
         announcement_conv = ConversationHandler(
@@ -149,13 +174,9 @@ class GamingMarketplaceBot:
         # Basic command handlers
         self.application.add_handler(CommandHandler('start', MainMenuHandler.start_command))
         self.application.add_handler(CommandHandler('admin', AdminPanelHandler.admin_command))
-        self.application.add_handler(CommandHandler('stats', AdminPanelHandler.admin_stats))
-        self.application.add_handler(CommandHandler('users', AdminPanelHandler.admin_users_command))
-        self.application.add_handler(CommandHandler('broadcast', AdminPanelHandler.admin_broadcast))
-        self.application.add_handler(CommandHandler('transactions', AdminPanelHandler.admin_transactions))
-        self.application.add_handler(CommandHandler('settings', AdminPanelHandler.admin_settings))
         
-        # Conversation handlers
+        # Conversation handlers (order matters!)
+        self.application.add_handler(admin_conv)
         self.application.add_handler(announcement_conv)
         self.application.add_handler(escrow_conv)
         
@@ -183,10 +204,6 @@ class GamingMarketplaceBot:
         self.application.add_handler(CallbackQueryHandler(
             EscrowHandler.handle_rating_selection,
             pattern=r'^rating_\d+$'
-        ))
-        self.application.add_handler(CallbackQueryHandler(
-            AdminPanelHandler.handle_admin_user_action,
-            pattern=r'^admin_(ban_|unban_|suspicious_|balance_|stats_)\d+$'
         ))
         
         # Message handlers
